@@ -1,0 +1,81 @@
+server:
+  port: 8090
+spring:
+  application:
+    name: security-demo
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  datasource:
+    url: jdbc:postgresql://localhost:5432/TestUser
+    username: postgres
+    password: postdb
+    driver-class-name: org.postgresql.Driver
+  output:
+    ansi:
+      enabled: always
+  storage:
+    client-id: abc
+    client-secret: cba
+  jpa:
+    hibernate:
+      ddl-auto: update
+      generate-ddl: true
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      format-sql: true
+      show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: datp3696@gmail.com
+    password: stvkepuocrcyafom
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  redis:
+    host: localhost
+    port: 6379
+  security:
+    authentication:
+      jwt:
+        jwt_refresh_expiration: 2592000000
+        key_store: keystore.jks
+        key_store_password: phamthanhdat
+        key_alias: viz
+    user:
+      name: admin
+      password: password
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/IAM
+          jwk-set-uri: http://localhost:8080/realms/IAM/protocol/openid-connect/certs
+          jwk-set-uris:
+            sso: http://localhost:8080/realms/IAM/protocol/openid-connect/certs
+            internal: http://localhost:8090/api/certificate/.well-known/jwks.json
+idp:
+  enabled: false
+  url: http://localhost:8080
+  client-id: aim_app
+  client-secret: gCmqsGzo2kEwgUCJtPhYIlTNDX1KFau1
+  endpoints:
+    token: /realms/IAM/protocol/openid-connect/token
+    create-user: /admin/realms/IAM/users
+    logout: /realms/IAM/protocol/openid-connect/logout
+    enable-user: /admin/realms/IAM/users/{userId}
+    reset-password: /admin/realms/IAM/users/{userId}/reset-password
+    user-info: /realms/IAM/protocol/openid-connect/userinfo
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    version: openapi_3_0
+logging:
+  file:
+    path: logs/
+    name: logs/application.log

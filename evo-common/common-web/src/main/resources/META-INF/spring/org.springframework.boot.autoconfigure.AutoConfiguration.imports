@@ -1,0 +1,8 @@
+com.evo.common.webapp.config.jackson.CustomLocalDateSerializer
+com.evo.common.webapp.config.jackson.JacksonConfiguration
+com.evo.common.webapp.config.CommonConfig
+com.evo.common.webapp.config.CustomPermissionEvaluator
+com.evo.common.webapp.config.HttpSecurityConfiguration
+com.evo.common.webapp.config.JwkAuthenticationManagerResolver
+com.evo.common.webapp.config.JwtProperties
+com.evo.common.webapp.config.RegexPermissionEvaluator
