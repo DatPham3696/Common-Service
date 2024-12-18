@@ -35,7 +35,7 @@ public class JwkAuthenticationManagerResolver implements
     private String toIssuerId(HttpServletRequest request) {
         String token = this.resolver.resolve(request);
         try {
-            if (StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("sub"))) {
+            if ((StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("sub"))) || (StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("client-id")))) {
                 return "internal";
             } else if (StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("preferred_username"))) {
                 return "sso";

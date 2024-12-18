@@ -15,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Slf4j
 @EnableWebSecurity
@@ -24,7 +27,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class HttpSecurityConfiguration {
 
 //    private final ActionLogFilter actionLogFilter;
-//    private final CustomAuthenticationFilter customAuthenticationFilter;
+    private final CustomAuthenticationFilter customAuthenticationFilter;
 //    private final ForbiddenTokenFilter forbiddenTokenFilter;
     private final JwtProperties jwtProperties;
 
@@ -53,7 +56,7 @@ public class HttpSecurityConfiguration {
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .authenticationManagerResolver(this.jwkResolver(this.jwtProperties)));
 //        http.addFilterAfter(this.forbiddenTokenFilter, BearerTokenAuthenticationFilter.class);
-//        http.addFilterAfter(this.customAuthenticationFilter, BearerTokenAuthenticationFilter.class);
+        http.addFilterAfter(this.customAuthenticationFilter, BearerTokenAuthenticationFilter.class);
 //        http.addFilterAfter(this.actionLogFilter, BearerTokenAuthenticationFilter.class);
         // @formatter:on
         return http.build();
@@ -68,5 +71,15 @@ public class HttpSecurityConfiguration {
     public AuthenticationManagerResolver<HttpServletRequest> jwkResolver(JwtProperties jwtProperties) {
         return new JwkAuthenticationManagerResolver(jwtProperties);
     }
-
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("*"); // Adjust as needed for production
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class CustomPermissionEvaluator implements PermissionEvaluator {
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-        String requiredPermission = targetDomainObject.toString()+"."+permission.toString();
+        String requiredPermission = targetDomainObject.toString()+"_"+permission.toString();
         if (!(authentication instanceof UserAuthentication userAuthentication)) {
             throw new RuntimeException("NOT_SUPPORTED_AUTHENTICATION");
         }

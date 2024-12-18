@@ -44,6 +44,5 @@ public class FeignClientInterceptor implements RequestInterceptor {
         } catch (Exception e) {
             throw new RuntimeException("Error while fetching client token: " + e.getMessage(), e);
         }
-
     }
 }

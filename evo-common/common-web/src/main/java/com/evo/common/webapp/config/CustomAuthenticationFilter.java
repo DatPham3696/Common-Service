@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -39,30 +41,34 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        log.info("CustomAuthenticationFilter");
+        log.info("------------CustomAuthenticationFilter------------");
         SecurityContext securityContext = SecurityContextHolder.getContext();
-        JwtAuthenticationToken authentication =
-                (JwtAuthenticationToken) securityContext.getAuthentication();
+        JwtAuthenticationToken authentication = (JwtAuthenticationToken) securityContext.getAuthentication();
         Jwt token = authentication.getToken();
 
-        Boolean isRoot = Boolean.FALSE;
+        String claim;
+        Boolean isRoot;
         Boolean isClient = Boolean.FALSE;
-
-        Optional<UserAuthority> optionalUserAuthority = enrichAuthority(token);
-        //@TODO enrich
-
-        Set<SimpleGrantedAuthority> grantedPermissions = new HashSet<>();
         String username;
-        if (StringUtils.hasText(token.getClaimAsString("preferred_username"))) {
-            username = token.getClaimAsString("preferred_username");
+        Set<SimpleGrantedAuthority> grantedPermissions = new HashSet<>();
+
+        if (StringUtils.hasText(token.getClaimAsString("client_id")) ) {
+            username = token.getClaimAsString("client_id");
+            isRoot = Boolean.TRUE;
         } else {
-            username = token.getClaimAsString("sub");
+            if (StringUtils.hasText(token.getClaimAsString("preferred_username"))) {
+                username = token.getClaimAsString("preferred_username");
+                claim = "preferred_username";
+            } else {
+                username = token.getClaimAsString("sub");
+                claim = "sub";
+            }
+            UserAuthority optionalUserAuthority = enrichAuthority(token, claim).orElseThrow();
+            grantedPermissions = optionalUserAuthority.getGrantedPermissions().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
+            isRoot = optionalUserAuthority.getIsRoot();
         }
-
         User principal = new User(username, "", grantedPermissions);
-        AbstractAuthenticationToken auth =
-                new UserAuthentication(principal, token, grantedPermissions, isRoot, isClient);
-
+        AbstractAuthenticationToken auth = new UserAuthentication(principal, token, grantedPermissions, isRoot, isClient);
         SecurityContextHolder.getContext().setAuthentication(auth);
         filterChain.doFilter(request, response);
     }
@@ -71,12 +77,27 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
-
         return !(authentication instanceof JwtAuthenticationToken);
     }
 
-    private Optional<UserAuthority> enrichAuthority(Jwt token) {
+    private Optional<UserAuthority> enrichAuthority(Jwt token, String claim) {
+        String id = token.getClaimAsString(claim);
+        if (id == null) {
+            log.warn("Claim {} is missing or invalid", claim);
+            return Optional.empty();
+        }
 
-        return Optional.empty();
+        switch (claim) {
+            case "client_id":
+                return Optional.ofNullable(authorityService.getUserAuthority(id));
+            case "id_user":
+                return Optional.ofNullable(authorityService.getClientAuthority(UUID.fromString(id)));
+            case "sub":
+                return Optional.ofNullable(authorityService.getUserAuthority(id));
+            default:
+                log.warn("Unknown claim type: {}", claim);
+                return Optional.empty();
+        }
     }
+
 }
