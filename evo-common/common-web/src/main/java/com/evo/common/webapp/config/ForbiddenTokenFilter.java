@@ -16,22 +16,42 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Map;
 
 @Component
 @Slf4j
 public class ForbiddenTokenFilter extends OncePerRequestFilter {
 
-//    private final TokenCacheService tokenCacheService;
-//
-//    public ForbiddenTokenFilter(TokenCacheService tokenCacheService) {
-//        this.tokenCacheService = tokenCacheService;
-//    }
+    private final CommonService commonService;
+
+
+    public ForbiddenTokenFilter(CommonService commonService) {
+        this.commonService = commonService;
+    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest, @NonNull HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         log.info("ForbiddenTokenFilter");
-        // @TOO check token blacklist
+        SecurityContext securityContextHolder = SecurityContextHolder.getContext();
+        Authentication authentication = securityContextHolder.getAuthentication();
 
+        if (authentication instanceof JwtAuthenticationToken jwtAuthToken) {
+            Map<String, Object> tokenAtribute = jwtAuthToken.getTokenAttributes();
+          if(tokenAtribute.containsKey("jti")){
+              String accessToken = jwtAuthToken.getTokenAttributes().get("jti").toString();
+              Instant expiration = (Instant) jwtAuthToken.getTokenAttributes().get("exp");
+              log.info("Token JTI: {}", accessToken);
+              if (expiration != null && expiration.isBefore(Instant.now())) {
+                  throw new RuntimeException("Token expired");
+              }
+              if (commonService.isTokenExist("invalid-access-token:" + accessToken)) {
+                  throw new RuntimeException("Invalid access token");
+              }
+          }else {
+              filterChain.doFilter(httpServletRequest,httpServletResponse);
+          }
+        }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 

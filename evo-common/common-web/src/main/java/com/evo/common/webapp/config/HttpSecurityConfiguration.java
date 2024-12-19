@@ -44,6 +44,7 @@ public class HttpSecurityConfiguration {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/authenticate/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/api/export-data/export/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

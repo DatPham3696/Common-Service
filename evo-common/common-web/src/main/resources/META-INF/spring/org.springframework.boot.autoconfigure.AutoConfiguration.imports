@@ -10,3 +10,6 @@ com.evo.common.webapp.config.JwkAuthenticationManagerResolver
 com.evo.common.webapp.config.JwtProperties
 com.evo.common.webapp.config.RegexPermissionEvaluator
 com.evo.common.webapp.security.impl.RemoteAuthorityServiceImpl
+com.evo.common.webapp.config.CommonService
+com.evo.common.webapp.config.RedisConfig
+com.evo.common.webapp.config.RedisService

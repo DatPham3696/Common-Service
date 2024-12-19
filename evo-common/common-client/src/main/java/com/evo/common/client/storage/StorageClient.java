@@ -42,4 +42,5 @@ public interface StorageClient {
                                      @RequestParam("width") Optional<Integer> width,
                                      @RequestParam("height") Optional<Integer> height,
                                      @RequestParam("ratio") Optional<Double> ratio);
+
 }

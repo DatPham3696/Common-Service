@@ -32,9 +32,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CustomAuthenticationFilter extends OncePerRequestFilter {
     private final AuthorityService authorityService;
-
-    public CustomAuthenticationFilter(AuthorityService authorityService) {
+    private final CommonService commonService;
+    public CustomAuthenticationFilter(AuthorityService authorityService, CommonService commonService) {
         this.authorityService = authorityService;
+        this.commonService = commonService;
     }
 
     @Override
