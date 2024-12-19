@@ -1,5 +1,9 @@
 package com.example.security_demo.controller;
 
+import com.evo.common.UserAuthority;
+import com.evo.common.webapp.security.AuthorityService;
+import com.example.security_demo.config.JwtTokenUtils;
+import com.example.security_demo.config.TokenProvider;
 import com.example.security_demo.dto.request.Page.SearchRequest;
 import com.example.security_demo.dto.request.user.*;
 import com.example.security_demo.dto.response.user.UserResponse;
@@ -12,6 +16,7 @@ import com.example.security_demo.service.UserKeycloakService;
 import com.example.security_demo.service.DefaultUserService;
 import com.example.security_demo.service.UserService;
 import com.example.security_demo.service.keyCloakService.VerifyKeyService;
+import com.example.security_demo.service.storageService.AuthorityServiceImplement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +36,9 @@ public class UserController {
     private final EmailService emailService;
     private final UserKeycloakService userKeycloakService;
     private final VerifyKeyService verifyKeyService;
-
+    private final TokenProvider tokenProvider;
+    private final AuthorityServiceImplement authorityServiceImplement;
+    private final AuthorityService authorityService;
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO user) {
         try {
@@ -150,12 +157,12 @@ public class UserController {
         return ResponseEntity.ok().body(defaultUserService.getUserInfor(accessToken));
     }
     @GetMapping("/users-infor")
-    @PreAuthorize("hasPermission('ADMIN','ADMIN')")
+//    @PreAuthorize("hasPermission('ADMIN','ADMIN')")
     public ResponseEntity<UsersResponse<UserResponse>> getUsers(@ModelAttribute SearchRequest request){
         return ResponseEntity.ok().body(defaultUserService.getUsers(request));
     }
     @GetMapping("/users-search")
-    @PreAuthorize("hasPermission('ADMIN','ADMIN')")
+//    @PreAuthorize("hasPermission('ADMIN','ADMIN')")
     public ResponseEntity<UsersResponse<UserResponse>> getSearch(@ModelAttribute UserSearchRequest request){
         return ResponseEntity.ok().body(defaultUserService.getUsers(request));
     }
@@ -164,5 +171,17 @@ public class UserController {
     public ResponseEntity<?> verifyClientKey (@PathVariable("clientId") String clientId,
                                               @PathVariable("clientSecret") String clientSecret ){
         return ResponseEntity.ok().body(verifyKeyService.verifyClientKey(clientId,clientSecret));
+    }
+    @GetMapping("/certificate/.well-known/jwks.json")
+    public ResponseEntity<?> getPublicKey(){
+        return ResponseEntity.ok(tokenProvider.jwkSet().toJSONObject());
+    }
+    @GetMapping("/{email}/authorities-by-email")
+    ResponseEntity<UserAuthority> getUserAuthority(@PathVariable("email") String email){
+        if (email == null || email.isEmpty()) {
+            System.out.println("loi xay ra ");
+            return ResponseEntity.badRequest().body(null);
+        }
+        return ResponseEntity.ok(authorityService.getUserAuthority(email));
     }
 }

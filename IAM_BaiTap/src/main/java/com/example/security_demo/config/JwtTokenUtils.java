@@ -1,5 +1,6 @@
 package com.example.security_demo.config;
 
+import com.evo.common.webapp.config.CommonService;
 import com.example.security_demo.entity.*;
 import com.example.security_demo.repository.*;
 import io.jsonwebtoken.Claims;
@@ -18,6 +19,8 @@ public class JwtTokenUtils {
     private final IRolePermissionRepository rolePermissionRepository;
     private final IInvalidTokenRepository invalidTokenRepository;
     private final IRoleUserRepository roleUserRepository;
+    private final CommonService commonService;
+
     @Autowired
     private TokenProvider tokenProvider;
     @Value("${spring.security.authentication.jwt.jwt_refresh_expiration}")
@@ -25,12 +28,13 @@ public class JwtTokenUtils {
 
     public JwtTokenUtils(IRoleRepository roleRepository, IPermissionRepository permissionRepository,
                          IRolePermissionRepository rolePermissionRepository, IInvalidTokenRepository invalidTokenRepository,
-                         IRoleUserRepository roleUserRepository) {
+                         IRoleUserRepository roleUserRepository, CommonService commonService) {
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
         this.rolePermissionRepository = rolePermissionRepository;
         this.invalidTokenRepository = invalidTokenRepository;
         this.roleUserRepository = roleUserRepository;
+        this.commonService = commonService;
     }
 
     public String generateToken(User user) {
@@ -109,9 +113,9 @@ public class JwtTokenUtils {
 
     public boolean isTokenValid(String token) {
         String jti = getJtiFromToken(token);
-        if(invalidTokenRepository.existsById(jti)){
+        if(commonService.isTokenExist(jti)){
             if(isTokenExpired(token)){
-                invalidTokenRepository.deleteById(jti);
+                commonService.deleteFromRedis(jti);
             }
             return true;
         }

@@ -1,12 +1,11 @@
 package com.example.security_demo.service;
 
+import com.evo.common.webapp.config.CommonService;
+import com.evo.common.webapp.config.RedisService;
 import com.example.security_demo.config.JwtTokenUtils;
 import com.example.security_demo.dto.request.Page.SearchRequest;
 import com.example.security_demo.dto.request.user.*;
-import com.example.security_demo.dto.response.user.ChangePasswordResponse;
-import com.example.security_demo.dto.response.user.JwtResponse;
-import com.example.security_demo.dto.response.user.UserResponse;
-import com.example.security_demo.dto.response.user.UsersResponse;
+import com.example.security_demo.dto.response.user.*;
 import com.example.security_demo.entity.*;
 import com.example.security_demo.enums.LogInfor;
 import com.example.security_demo.exception.InvalidPasswordException;
@@ -15,6 +14,7 @@ import com.example.security_demo.exception.UserNotFoundException;
 import com.example.security_demo.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -47,14 +47,15 @@ public class DefaultUserService {
     private final IRolePermissionRepository rolePermissionRepository;
     private final EmailService emailService;
     private final IInvalidTokenRepository invalidTokenRepository;
-    private final RedisService redisService;
+    //    private final RedisService redisService;
     private final LogService logService;
     private final IRoleUserRepository roleUserRepository;
     private final HttpServletRequest request;
     private final RefreshTokenService refreshTokenService;
     private final UserKeycloakService userKeycloakService;
     private final UserRepositoryImpl userRepositoryImpl;
-
+    private final CommonService commonService;
+    private final RedisService redisService;
     public UserResponse register(RegisterDTO registerDTO) throws UserExistedException {
         if (userRepository.existsByEmail(registerDTO.getEmail())) {
             throw new UserExistedException("Email already exists");
@@ -128,25 +129,24 @@ public class DefaultUserService {
         String storeCode = redisService.getStringFromRedis(email);
         if (storeCode != null && storeCode.equals(code)) {
             redisService.deleteFromRedis(email);
-            User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Invalid inforr"));
-            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            SecurityContext securityContextHolder = SecurityContextHolder.getContext();
-            securityContextHolder.setAuthentication(authentication);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Invalid inforr"));
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        SecurityContext securityContextHolder = SecurityContextHolder.getContext();
+        securityContextHolder.setAuthentication(authentication);
 
-            logService.saveLog(UserActivityLog.builder()
-                    .action(LogInfor.LOGIN.getDescription())
-                    .browserId(request.getRemoteAddr())
-                    .userId(user.getId())
-                    .timestamp(LocalDateTime.now())
-                    .build());
-            refreshTokenService.deleteByUserId(user.getId());
-            String token = jwtTokenUtils.generateToken(user);
-            return JwtResponse.builder()
-                    .accessToken(token)
-                    .refreshToken(refreshTokenService.createRefreshToken(user.getId(),
-                            jwtTokenUtils.getJtiFromToken(token),
-                            jwtTokenUtils.getExpirationTimeFromToken(token)).getRefreshToken())
-                    .build();
+        logService.saveLog(UserActivityLog.builder()
+                .action(LogInfor.LOGIN.getDescription())
+                .browserId(request.getRemoteAddr())
+                .userId(user.getId())
+                .timestamp(LocalDateTime.now())
+                .build());
+//        refreshTokenService.deleteByUserId(user.getId());
+//        commonService.deleteFromRedis();
+        String token = jwtTokenUtils.generateToken(user);
+        return JwtResponse.builder()
+                .accessToken(token)
+                .refreshToken(jwtTokenUtils.generaRefreshToken(user))
+                .build();
         } else {
             throw new RuntimeException("Invalid code");
         }
@@ -172,20 +172,30 @@ public class DefaultUserService {
 //        throw new RuntimeException("Error");
 //    }
     // dùng refresh đến khi hết hạn
-    public String refreshToken(RefreshTokenRequest request) {
-        Optional<RefreshToken> refreshToken = refreshTokenService.findByToken(request.getRefreshToken());
-        if (refreshToken.isPresent()) {
-            invalidTokenRepository.save(
-                    InvalidToken.builder()
-                            .id(refreshToken.get().getAccessTokenId())
-                            .expiryTime(refreshToken.get().getAccessTokenExp())
-                            .build());
-            RefreshToken validRefreshToken = refreshTokenService.verifyRefreshToken(refreshToken.get());
-            User user = userRepository.findById(validRefreshToken.getUserId()).orElseThrow(() -> new RuntimeException("Not find user"));
-            String accessToken = jwtTokenUtils.generateToken(user);
-            return accessToken;
+    public TokenResponse refreshToken(RefreshTokenRequest request) {
+
+        String refreshToken = request.getRefreshToken();
+        String refreshTokenJti = jwtTokenUtils.getJtiFromToken(refreshToken);
+        if (commonService.isTokenExist("invalid-refresh-token:" + refreshTokenJti)) {
+            throw new RuntimeException("Invalid refresh token");
         }
-        throw new RuntimeException("Error");
+        String email = jwtTokenUtils.getSubFromToken(refreshToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        String newAccessToken = jwtTokenUtils.generateToken(user);
+
+        String newRefreshToken = jwtTokenUtils.generaRefreshToken(user);
+
+        commonService.storeToken("invalid-refresh-token:" + refreshTokenJti, refreshToken, 7 * 24 * 60 * 60); // 7 ngày
+
+        commonService.storeToken("valid-refresh-token:" + jwtTokenUtils.getJtiFromToken(newRefreshToken), newRefreshToken, 7 * 24 * 60 * 60); // 7 ngày
+
+        commonService.storeToken("valid-access-token:" + jwtTokenUtils.getJtiFromToken(newAccessToken), newAccessToken, 60 * 60); // 1 giờ
+
+        return TokenResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
     }
 
     public UserResponse getUserById(String userId) {
@@ -287,15 +297,22 @@ public class DefaultUserService {
     }
 
     public String logout(String accessToken, String refreshToken) {
-        if (accessToken.startsWith("Bearer")) {
+        if (accessToken.startsWith("Bearer ")) {
             accessToken = accessToken.substring(7).trim();
         }
-        InvalidToken invalidToken = InvalidToken.builder()
-                .id(jwtTokenUtils.getJtiFromToken(accessToken))
-                .expiryTime(jwtTokenUtils.getExpirationTimeFromToken(accessToken))
-                .refreshTokenId(jwtTokenUtils.getJtiFromToken(refreshToken))
-                .build();
-        invalidTokenRepository.save(invalidToken);
+//        InvalidToken invalidToken = InvalidToken.builder()
+//                .id(jwtTokenUtils.getJtiFromToken(accessToken))
+//                .expiryTime(jwtTokenUtils.getExpirationTimeFromToken(accessToken))
+//                .refreshTokenId(jwtTokenUtils.getJtiFromToken(refreshToken))
+//                .build();
+//        invalidTokenRepository.save(invalidToken);
+        String accessTokenJti = jwtTokenUtils.getJtiFromToken(accessToken);
+        String accessTokenExp = jwtTokenUtils.getExpirationTimeFromToken(accessToken).toString();
+        String refreshTokenJti = jwtTokenUtils.getJtiFromToken(refreshToken);
+        String refreshTokenExp = jwtTokenUtils.getExpirationTimeFromToken(refreshToken).toString();
+
+        commonService.storeToken("invalid-access-token:" + accessTokenJti , accessTokenExp, 60 * 60);
+        commonService.storeToken("invalid-refresh-token:" + refreshTokenJti, refreshTokenExp, 7 * 24 * 60 * 60);
         return "logout success";
     }
 

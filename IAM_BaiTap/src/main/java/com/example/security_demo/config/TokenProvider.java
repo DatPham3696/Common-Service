@@ -1,6 +1,10 @@
 package com.example.security_demo.config;
 
 import com.example.security_demo.securityConfig.AuthenticationProperties;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.RSAKey;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -13,6 +17,8 @@ import org.springframework.security.crypto.encrypt.KeyStoreKeyFactory;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyPair;
+import java.security.interfaces.RSAPublicKey;
+import java.util.UUID;
 
 @Component
 @EnableConfigurationProperties(AuthenticationProperties.class)
@@ -34,5 +40,11 @@ public class TokenProvider implements InitializingBean {
         this.keyPair = keyPair(properties.getKeyStore(),
                 properties.getKeyStorePassword(),
                 properties.getKeyAlias());
+    }
+    public JWKSet jwkSet() {
+        RSAKey.Builder builder = new RSAKey.Builder((RSAPublicKey) this.keyPair.getPublic()).keyUse(KeyUse.SIGNATURE)
+                .algorithm(JWSAlgorithm.RS256)
+                .keyID(UUID.randomUUID().toString());
+        return new JWKSet(builder.build());
     }
 }
