@@ -52,8 +52,8 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
         String username;
         Set<SimpleGrantedAuthority> grantedPermissions = new HashSet<>();
 
-        if (StringUtils.hasText(token.getClaimAsString("client_id")) ) {
-            username = token.getClaimAsString("client_id");
+        if (StringUtils.hasText(token.getClaimAsString("client-id")) ) {
+            username = token.getClaimAsString("client-id");
             isRoot = Boolean.TRUE;
         } else {
             if (StringUtils.hasText(token.getClaimAsString("preferred_username"))) {
@@ -86,9 +86,8 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             log.warn("Claim {} is missing or invalid", claim);
             return Optional.empty();
         }
-
         switch (claim) {
-            case "client_id":
+            case "client-id":
                 return Optional.ofNullable(authorityService.getUserAuthority(id));
             case "id_user":
                 return Optional.ofNullable(authorityService.getClientAuthority(UUID.fromString(id)));

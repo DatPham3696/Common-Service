@@ -26,38 +26,31 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class HttpSecurityConfiguration {
 
-//    private final ActionLogFilter actionLogFilter;
+    private final ActionLogFilter actionLogFilter;
     private final CustomAuthenticationFilter customAuthenticationFilter;
-//    private final ForbiddenTokenFilter forbiddenTokenFilter;
+    private final ForbiddenTokenFilter forbiddenTokenFilter;
     private final JwtProperties jwtProperties;
 
-//    public HttpSecurityConfiguration(ActionLogFilter actionLogFilter,
-//                                     CustomAuthenticationFilter customAuthenticationFilter,
-//                                     ForbiddenTokenFilter forbiddenTokenFilter, JwtProperties jwtProperties) {
-//        this.actionLogFilter = actionLogFilter;
-//        this.customAuthenticationFilter = customAuthenticationFilter;
-//        this.forbiddenTokenFilter = forbiddenTokenFilter;
-//        this.jwtProperties = jwtProperties;
-//    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorizeHttpRequests ->
-                        authorizeHttpRequests.anyRequest().permitAll()
-//                                .requestMatchers("/").permitAll()
-//                                .requestMatchers("/health").permitAll()
-//                                .requestMatchers("/api/certificate/.well-known/jwks.json").permitAll()
-//                                .requestMatchers("/api/public/**").permitAll()
-//                                .requestMatchers("/api/authenticate/**").permitAll()
-//                                .requestMatchers("/api/**").authenticated()
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/health").permitAll()
+                        .requestMatchers("/api/users/certificate/.well-known/jwks.json").permitAll()
+                        .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/authenticate/**").permitAll()
+                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .authenticationManagerResolver(this.jwkResolver(this.jwtProperties)));
-//        http.addFilterAfter(this.forbiddenTokenFilter, BearerTokenAuthenticationFilter.class);
+        http.addFilterAfter(this.forbiddenTokenFilter, BearerTokenAuthenticationFilter.class);
         http.addFilterAfter(this.customAuthenticationFilter, BearerTokenAuthenticationFilter.class);
-//        http.addFilterAfter(this.actionLogFilter, BearerTokenAuthenticationFilter.class);
+        http.addFilterAfter(this.actionLogFilter, BearerTokenAuthenticationFilter.class);
         // @formatter:on
         return http.build();
     }

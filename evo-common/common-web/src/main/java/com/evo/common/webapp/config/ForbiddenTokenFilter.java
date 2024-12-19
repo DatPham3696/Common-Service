@@ -21,11 +21,11 @@ import java.io.IOException;
 @Slf4j
 public class ForbiddenTokenFilter extends OncePerRequestFilter {
 
-    private final TokenCacheService tokenCacheService;
-
-    public ForbiddenTokenFilter(TokenCacheService tokenCacheService) {
-        this.tokenCacheService = tokenCacheService;
-    }
+//    private final TokenCacheService tokenCacheService;
+//
+//    public ForbiddenTokenFilter(TokenCacheService tokenCacheService) {
+//        this.tokenCacheService = tokenCacheService;
+//    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest, @NonNull HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
