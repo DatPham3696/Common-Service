@@ -15,7 +15,7 @@ import java.io.IOException;
 public class ImportDataController {
     private final ImportDataService importDataService;
     @PostMapping("/import")
-    public ResponseEntity<?> importData(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<?> importData(@RequestPart("file") MultipartFile file){
         try{
             String result = importDataService.importUserFromExcel(file);
             if(result.contains("errors")){

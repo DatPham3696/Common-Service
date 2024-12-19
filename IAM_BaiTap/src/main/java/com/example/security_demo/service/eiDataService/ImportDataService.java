@@ -1,7 +1,11 @@
 package com.example.security_demo.service.eiDataService;
 
+import com.example.security_demo.entity.UserActivityLog;
 import com.example.security_demo.entity.UserProfile;
+import com.example.security_demo.enums.LogInfor;
 import com.example.security_demo.repository.IUserProfileRepository;
+import com.example.security_demo.service.LogService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -13,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Iterator;
@@ -21,7 +26,8 @@ import java.util.Iterator;
 @RequiredArgsConstructor
 public class ImportDataService {
     private final IUserProfileRepository userProfileRepository;
-
+    private final LogService logService;
+    private final HttpServletRequest request;
     public String importUserFromExcel(MultipartFile file) throws IOException {
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
         Sheet sheet = workbook.getSheetAt(0);
@@ -57,6 +63,11 @@ public class ImportDataService {
             }
         }
         workbook.close();
+        logService.saveLog(UserActivityLog.builder()
+                .action(LogInfor.IMPORTDATA.getDescription())
+                .browserId(request.getRemoteAddr())
+                .timestamp(LocalDateTime.now())
+                .build());
         if(errorReport.length() > 0){
             return "Import error: \n" + errorReport.toString();
         }

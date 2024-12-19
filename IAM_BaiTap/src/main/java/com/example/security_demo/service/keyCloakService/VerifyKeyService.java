@@ -14,8 +14,9 @@ public class VerifyKeyService {
     @Value("${spring.storage.client-secret}")
     private String configClientSecret;
     private final JwtTokenUtils jwtTokenUtils;
-    public String verifyClientKey(String clientId, String clientSecret){
-        if(!configClientId.equals(clientId) && !configClientSecret.equals(clientSecret)){
+
+    public String verifyClientKey(String clientId, String clientSecret) {
+        if (!configClientId.equals(clientId) && !configClientSecret.equals(clientSecret)) {
             throw new RuntimeException("Invalid credential infor");
         }
         return jwtTokenUtils.generateClientToken(clientId);

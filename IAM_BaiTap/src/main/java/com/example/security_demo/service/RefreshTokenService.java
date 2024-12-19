@@ -1,5 +1,6 @@
 package com.example.security_demo.service;
 
+import com.evo.common.webapp.config.CommonService;
 import com.example.security_demo.config.JwtTokenUtils;
 import com.example.security_demo.entity.RefreshToken;
 import com.example.security_demo.repository.IRefreshTokenRepository;
@@ -22,7 +23,7 @@ public class RefreshTokenService {
     private final IRefreshTokenRepository refreshTokenRepository;
     private final IUserRepository userRepository;
     private final JwtTokenUtils jwtTokenUtils;
-
+    private final CommonService commonService;
     public Optional<RefreshToken> findByToken(String token) {
         return refreshTokenRepository.findByRefreshToken(token);
     }
