@@ -39,13 +39,13 @@ public class ForbiddenTokenFilter extends OncePerRequestFilter {
         if (authentication instanceof JwtAuthenticationToken jwtAuthToken) {
             Map<String, Object> tokenAtribute = jwtAuthToken.getTokenAttributes();
           if(tokenAtribute.containsKey("jti")){
-              String accessToken = jwtAuthToken.getTokenAttributes().get("jti").toString();
+              String accessTokenJti = jwtAuthToken.getTokenAttributes().get("jti").toString();
               Instant expiration = (Instant) jwtAuthToken.getTokenAttributes().get("exp");
-              log.info("Token JTI: {}", accessToken);
+              log.info("Token JTI: {}", accessTokenJti);
               if (expiration != null && expiration.isBefore(Instant.now())) {
                   throw new RuntimeException("Token expired");
               }
-              if (commonService.isTokenExist("invalid-access-token:" + accessToken)) {
+              if (commonService.isTokenExist("invalid-access-token:" + accessTokenJti)) {
                   throw new RuntimeException("Invalid access token");
               }
           }else {
