@@ -1,11 +1,11 @@
 com.evo.common.webapp.config.jackson.CustomLocalDateSerializer
 com.evo.common.webapp.config.jackson.JacksonConfiguration
 com.evo.common.webapp.config.CommonConfig
-com.evo.common.webapp.config.ActionLogFilter
+com.evo.common.webapp.security.ActionLogFilter
 com.evo.common.webapp.config.CustomPermissionEvaluator
-com.evo.common.webapp.config.ForbiddenTokenFilter
-com.evo.common.webapp.config.CustomAuthenticationFilter
-com.evo.common.webapp.config.HttpSecurityConfiguration
+com.evo.common.webapp.security.ForbiddenTokenFilter
+com.evo.common.webapp.security.CustomAuthenticationFilter
+com.evo.common.webapp.security.HttpSecurityConfiguration
 com.evo.common.webapp.config.JwkAuthenticationManagerResolver
 com.evo.common.webapp.config.JwtProperties
 com.evo.common.webapp.config.RegexPermissionEvaluator

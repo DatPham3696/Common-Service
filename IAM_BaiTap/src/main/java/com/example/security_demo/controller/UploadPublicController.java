@@ -17,50 +17,40 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 public class UploadPublicController {
-//    private final StorageServiceClient storageServiceClient;
+    //    private final StorageServiceClient storageServiceClient;
     private final CredentialService credentialService;
     private final StorageClient storageClient;
 
-//    @PostMapping("/upload-file")
-//    public ResponseEntity<?> uploadFile(@RequestPart("file") MultipartFile file,
-//                                        @RequestParam("visibility") boolean visibility,
-//                                        @RequestParam("version") String version) {
-//        try {
-//            String owner = credentialService.getCredentialInfor();
-//            return ResponseEntity.ok()
-//                    .body(storageServiceClient.uploadPublicFile(file, visibility, version,owner).getBody());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file: " + e.getMessage());
-//        }
-//    }
-//
-//    @GetMapping("/get-content/{fileId}")
-//    public ResponseEntity<Resource> getContent(@PathVariable("fileId") String fileId) {
-//        ResponseEntity<Resource> response = storageServiceClient.getContent(fileId);
-//        return ResponseEntity.status(response.getStatusCode())
-//                .headers(response.getHeaders())
-//                .body(response.getBody());
-//    }
-//
-//    @GetMapping("/test")
+
+    //    @GetMapping("/test")
 //    public ResponseEntity<?> test() {
 //        return ResponseEntity.ok().body(storageServiceClient.test().getBody());
 //    }
-//
-//    @GetMapping("/download/{fileId}")
-//    public ResponseEntity<?> download(@PathVariable("fileId") String fileId) {
-//        ResponseEntity<Resource> response = storageServiceClient.downloadFile(fileId);
-//        return ResponseEntity.ok()
-//                .headers(response.getHeaders())
-//                .body(response.getBody());
-//    }
-
-    //--------------------------------------------------------------------------------
     @GetMapping("/get-content/{fileId}")
-//    @PreAuthorize("hasPermission('FILE','VIEW')")
     public ResponseEntity<Resource> getContent(@PathVariable("fileId") String fileId) {
         ResponseEntity<Resource> response = storageClient.getContent(fileId);
         return ResponseEntity.status(response.getStatusCode())
+                .headers(response.getHeaders())
+                .body(response.getBody());
+    }
+
+    @PostMapping("/upload-file")
+    public ResponseEntity<?> uploadFile(@RequestPart("file") MultipartFile file,
+                                        @RequestParam("visibility") boolean visibility,
+                                        @RequestParam("version") String version) {
+        try {
+            String owner = credentialService.getCredentialInfor();
+            return ResponseEntity.ok()
+                    .body(storageClient.uploadPublicFile(file, visibility, version, owner).getBody());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/download/{fileId}")
+    public ResponseEntity<?> download(@PathVariable("fileId") String fileId) {
+        ResponseEntity<Resource> response = storageClient.downloadFile(fileId);
+        return ResponseEntity.ok()
                 .headers(response.getHeaders())
                 .body(response.getBody());
     }

@@ -20,9 +20,9 @@ public interface StorageClient {
 
     @GetMapping(value = "/api/file/public/get-content/{fileId}")
     ResponseEntity<Resource> getContent(@PathVariable("fileId") String id);
-
-    @GetMapping(value = "/api/file/public/test")
-    ResponseEntity<String> test();
+//
+//    @GetMapping(value = "/api/file/public/test")
+//    ResponseEntity<String> test();
 
     @GetMapping(value = "/api/file/public/download/{fileId}")
     ResponseEntity<Resource> downloadFile(@PathVariable("fileId") String fileId);

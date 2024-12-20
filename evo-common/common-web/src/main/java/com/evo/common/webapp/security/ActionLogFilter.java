@@ -1,4 +1,4 @@
-package com.evo.common.webapp.config;
+package com.evo.common.webapp.security;
 
 import com.evo.common.webapp.support.CachedHttpServletRequestWrapper;
 import com.evo.common.webapp.support.SecurityUtils;
