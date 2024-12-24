@@ -1,8 +1,8 @@
 package com.example.security_demo.controller;
 
-import com.example.security_demo.dto.request.role.SoftDeleteRoleRequest;
-import com.example.security_demo.entity.Role;
-import com.example.security_demo.service.RoleService;
+import com.example.security_demo.application.dto.request.role.SoftDeleteRoleRequest;
+import com.example.security_demo.domain.entity.Role;
+import com.example.security_demo.application.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

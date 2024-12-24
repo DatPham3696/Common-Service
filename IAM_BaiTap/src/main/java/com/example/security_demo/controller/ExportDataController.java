@@ -1,7 +1,7 @@
 package com.example.security_demo.controller;
 
-import com.example.security_demo.dto.request.userProfile.UserProfileSearchRequest;
-import com.example.security_demo.service.eiDataService.ExportDataService;
+import com.example.security_demo.application.dto.request.userProfile.UserProfileSearchRequest;
+import com.example.security_demo.application.service.eiDataService.ExportDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;

@@ -1,7 +1,7 @@
 package com.example.security_demo.controller;
 
-import com.example.security_demo.entity.RolePermission;
-import com.example.security_demo.service.RolePermissionService;
+import com.example.security_demo.domain.entity.RolePermission;
+import com.example.security_demo.application.service.RolePermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

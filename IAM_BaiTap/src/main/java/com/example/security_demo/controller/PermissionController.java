@@ -1,8 +1,8 @@
 package com.example.security_demo.controller;
 
-import com.example.security_demo.dto.request.permission.SoftDeletePermissionRequest;
-import com.example.security_demo.entity.Permission;
-import com.example.security_demo.service.PermissionService;
+import com.example.security_demo.application.dto.request.permission.SoftDeletePermissionRequest;
+import com.example.security_demo.domain.entity.Permission;
+import com.example.security_demo.application.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

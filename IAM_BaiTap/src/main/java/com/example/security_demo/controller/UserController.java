@@ -2,21 +2,20 @@ package com.example.security_demo.controller;
 
 import com.evo.common.UserAuthority;
 import com.evo.common.webapp.security.AuthorityService;
-import com.example.security_demo.config.JwtTokenUtils;
-import com.example.security_demo.config.TokenProvider;
-import com.example.security_demo.dto.request.Page.SearchRequest;
-import com.example.security_demo.dto.request.user.*;
-import com.example.security_demo.dto.response.user.UserResponse;
-import com.example.security_demo.dto.response.user.UsersResponse;
+import com.example.security_demo.application.config.TokenProvider;
+import com.example.security_demo.application.dto.request.Page.SearchRequest;
+import com.example.security_demo.application.dto.request.user.*;
+import com.example.security_demo.application.dto.response.user.UserResponse;
+import com.example.security_demo.application.dto.response.user.UsersResponse;
 import com.example.security_demo.exception.InvalidPasswordException;
 import com.example.security_demo.exception.UserExistedException;
 import com.example.security_demo.exception.UserNotFoundException;
-import com.example.security_demo.service.EmailService;
-import com.example.security_demo.service.UserKeycloakService;
-import com.example.security_demo.service.DefaultUserService;
-import com.example.security_demo.service.UserService;
-import com.example.security_demo.service.keyCloakService.VerifyKeyService;
-import com.example.security_demo.service.storageService.AuthorityServiceImplement;
+import com.example.security_demo.application.service.EmailService;
+import com.example.security_demo.application.service.UserKeycloakService;
+import com.example.security_demo.application.service.DefaultUserService;
+import com.example.security_demo.application.service.UserService;
+import com.example.security_demo.application.service.keyCloakService.VerifyKeyService;
+import com.example.security_demo.application.service.storageService.AuthorityServiceImplement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("iam/api/users")
 public class UserController {
     private final DefaultUserService defaultUserService;
     private final UserService userService;

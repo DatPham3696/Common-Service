@@ -1,15 +1,12 @@
 package com.example.security_demo.controller;
 
 import com.evo.common.client.storage.StorageClient;
-import com.example.security_demo.service.CredentialService;
-import com.example.security_demo.service.UserKeycloakService;
+import com.example.security_demo.application.service.CredentialService;
 //import com.example.security_demo.service.storageService.StorageServiceClient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
