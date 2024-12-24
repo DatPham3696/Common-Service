@@ -18,13 +18,13 @@ import java.util.UUID;
         configuration = FeignClientConfiguration.class
 )
 public interface IamClient {
-    @GetMapping("/api/users/{email}/authorities-by-email")
+    @GetMapping("/iam/api/users/{email}/authorities-by-email")
     @LoadBalanced
     Response<UserAuthority> getUserAuthority(@PathVariable("email") String email);
 
 //    Response<UserAuthority> getUserAuthority(String username);
 
-    @GetMapping("/api/users/verify-client-key")
+    @GetMapping("/iam/api/users/verify-client-key")
     Response<?> generateToken(@RequestParam("clientId") String clientId,
                               @RequestParam("clientSecret") String clientSecret);
 
