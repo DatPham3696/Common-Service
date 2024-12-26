@@ -36,7 +36,7 @@ public class JwkAuthenticationManagerResolver implements
         String token = this.resolver.resolve(request);
         try {
             if ((StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("sub"))) ||
-                    (StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("client-id")))) {
+                    (StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("client-id"))) ) {
                 return "internal";
             } else if (StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("preferred_username"))) {
                 return "sso";
@@ -51,7 +51,7 @@ public class JwkAuthenticationManagerResolver implements
     private AuthenticationManager fromIssuer(String issuerId) {
         return Optional.ofNullable(this.issuers.get(issuerId))
                 .map(issuer -> NimbusJwtDecoder.withJwkSetUri(issuer).build())
-                    .map(JwtAuthenticationProvider::new)
-                    .orElseThrow(() -> new IllegalArgumentException("unknown issuer"))::authenticate;
+                .map(JwtAuthenticationProvider::new)
+                .orElseThrow(() -> new IllegalArgumentException("unknown issuer"))::authenticate;
     }
 }

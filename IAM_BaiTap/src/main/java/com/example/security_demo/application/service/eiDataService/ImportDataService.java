@@ -1,9 +1,9 @@
 package com.example.security_demo.application.service.eiDataService;
 
-import com.example.security_demo.domain.entity.UserActivityLog;
-import com.example.security_demo.domain.entity.UserProfile;
-import com.example.security_demo.enums.LogInfor;
-import com.example.security_demo.domain.repository.IUserProfileRepository;
+import com.example.security_demo.infrastructure.persistance.UserActivityLog;
+import com.example.security_demo.infrastructure.persistance.UserProfile;
+import com.example.security_demo.domain.enums.LogInfor;
+import com.example.security_demo.infrastructure.repository.IUserProfileRepositoryJpa;
 import com.example.security_demo.application.service.LogService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import java.util.Iterator;
 @Service
 @RequiredArgsConstructor
 public class ImportDataService {
-    private final IUserProfileRepository userProfileRepository;
+    private final IUserProfileRepositoryJpa userProfileRepository;
     private final LogService logService;
     private final HttpServletRequest request;
     public String importUserFromExcel(MultipartFile file) throws IOException {

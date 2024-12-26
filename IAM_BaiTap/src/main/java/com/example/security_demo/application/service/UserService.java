@@ -4,7 +4,7 @@ import com.example.security_demo.application.dto.request.user.EnableUserRequest;
 import com.example.security_demo.application.dto.request.user.RefreshTokenRequest;
 import com.example.security_demo.application.dto.request.user.RegisterDTO;
 import com.example.security_demo.application.dto.request.user.ResetPasswordRequest;
-import com.example.security_demo.exception.UserExistedException;
+import com.example.security_demo.domain.exception.UserExistedException;
 import com.example.security_demo.application.service.keyCloakService.IUserServiceStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

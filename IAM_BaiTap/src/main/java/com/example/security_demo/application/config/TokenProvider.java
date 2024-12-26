@@ -1,15 +1,12 @@
 package com.example.security_demo.application.config;
 
-import com.example.security_demo.securityConfig.AuthenticationProperties;
+import com.example.security_demo.infrastructure.securityConfig.AuthenticationProperties;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.io.ClassPathResource;

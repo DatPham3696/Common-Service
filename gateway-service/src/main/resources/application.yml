@@ -10,14 +10,60 @@ spring:
         locator:
           enabled: true
       routes:
+        - id: fallback
+          uri: forward:/fallback
+          predicates:
+            - Path=/fallback
         - id: iam-service
           uri: lb://security-demo
           predicates:
             - Path=/iam/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: iamServiceCircuitBreaker
+                fallbackUri: forward:/fallback/iam
         - id: storage-service
           uri: lb://storage
           predicates:
             - Path=/storage/**
+          filters:
+            - StripPrefix=1
+            - name: CircuitBreaker
+              args:
+                name: storageServiceCircuitBreaker
+                fallbackUri: forward:/fallback/storage
+  resilience4j:
+    circuitbreaker:
+      instances:
+        iamServiceCircuitBreaker:
+          slidingWindowSize: 10
+          failureRateThreshold: 50
+          waitDurationInOpenState: 20s
+          permittedNumberOfCallsInHalfOpenState: 3
+          slidingWindowType: 100
+          minimumNumberOfCalls: 20
+          recordExceptions:
+            - java.net.ConnectException
+            - java.net.SocketTimeoutException
+            - org.springframework.cloud.gateway.support.NotFoundException
+        storageServiceCircuitBreaker:
+          slidingWindowSize: 10
+          failureRateThreshold: 50
+          waitDurationInOpenState: 20s
+          permittedNumberOfCallsInHalfOpenState: 3
+          slidingWindowType: 100
+          minimumNumberOfCalls: 20
+    timeout:
+      instances:
+        default:
+          timeoutDuration: 10s
+    timelimiter:
+      instances:
+        iamServiceCircuitBreaker:
+          timeoutDuration: 10s
+          cancelRunningFuture: true
   eureka:
     client:
       service-url:
@@ -38,3 +84,8 @@ springdoc:
         url: /iam/v3/api-docs
       - name: Storage Service
         url: /storage/v3/api-docs
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    io.github.resilience4j: DEBUG
+    org.springframework.cloud.gateway.filter.factory.RetryGatewayFilterFactory: DEBUG

@@ -1,13 +1,10 @@
 package com.example.security_demo.domain.repository;
 
-import com.example.security_demo.domain.entity.RefreshToken;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.example.security_demo.infrastructure.persistance.RefreshToken;
 
 import java.util.Optional;
 
-@Repository
-public interface IRefreshTokenRepository extends JpaRepository<RefreshToken,Long> {
+public interface IRefreshTokenRepository  {
     Optional<RefreshToken> findByRefreshToken(String token);
     void deleteByUserId(String userId);
 }

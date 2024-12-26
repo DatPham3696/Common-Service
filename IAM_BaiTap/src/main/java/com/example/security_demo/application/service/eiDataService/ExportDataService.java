@@ -2,11 +2,11 @@ package com.example.security_demo.application.service.eiDataService;
 
 import com.evo.common.client.storage.StorageClient;
 import com.example.security_demo.application.dto.request.userProfile.UserProfileSearchRequest;
-import com.example.security_demo.domain.entity.UserActivityLog;
-import com.example.security_demo.domain.entity.UserProfile;
-import com.example.security_demo.enums.LogInfor;
-import com.example.security_demo.domain.repository.IUserProfileRepository;
-import com.example.security_demo.domain.repository.UserProfileImpl;
+import com.example.security_demo.infrastructure.persistance.UserActivityLog;
+import com.example.security_demo.infrastructure.persistance.UserProfile;
+import com.example.security_demo.domain.enums.LogInfor;
+import com.example.security_demo.infrastructure.repository.IUserProfileRepositoryJpa;
+import com.example.security_demo.infrastructure.repository.custom.UserProfileImpl;
 import com.example.security_demo.application.service.CredentialService;
 
 import com.example.security_demo.application.service.LogService;
@@ -26,7 +26,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ExportDataService {
-    private final IUserProfileRepository userProfileRepository;
+    private final IUserProfileRepositoryJpa userProfileRepository;
     private final UserProfileImpl userProfile;
     private final CredentialService credentialService;
     private final StorageClient storageServiceClient;

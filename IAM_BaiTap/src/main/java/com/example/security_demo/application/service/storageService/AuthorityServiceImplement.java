@@ -2,9 +2,9 @@ package com.example.security_demo.application.service.storageService;
 
 import com.evo.common.UserAuthority;
 import com.evo.common.webapp.security.AuthorityService;
-import com.example.security_demo.domain.entity.User;
-import com.example.security_demo.domain.repository.IRoleRepository;
-import com.example.security_demo.domain.repository.IUserRepository;
+import com.example.security_demo.infrastructure.persistance.User;
+import com.example.security_demo.infrastructure.repository.IRoleRepositoryJpa;
+import com.example.security_demo.infrastructure.repository.IUserRepositoryJpa;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -15,8 +15,8 @@ import java.util.UUID;
 @Primary
 @RequiredArgsConstructor
 public class AuthorityServiceImplement implements AuthorityService {
-    private final IUserRepository userRepository;
-    private final IRoleRepository roleRepository;
+    private final IUserRepositoryJpa userRepository;
+    private final IRoleRepositoryJpa roleRepository;
     private final com.example.security_demo.application.service.AuthorityService authorityService;
     @Override
     public UserAuthority getUserAuthority(String email) {

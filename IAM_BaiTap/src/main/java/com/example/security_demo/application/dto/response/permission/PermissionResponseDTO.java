@@ -1,7 +1,7 @@
 package com.example.security_demo.application.dto.response.permission;
 
 
-import com.example.security_demo.domain.entity.Permission;
+import com.example.security_demo.infrastructure.persistance.Permission;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

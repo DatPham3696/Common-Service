@@ -2,8 +2,8 @@ package com.example.security_demo.application.service;
 
 import com.example.security_demo.application.dto.request.permission.SoftDeletePermissionRequest;
 import com.example.security_demo.application.dto.response.permission.PermissionsResponse;
-import com.example.security_demo.domain.entity.Permission;
-import com.example.security_demo.domain.repository.IPermissionRepository;
+import com.example.security_demo.infrastructure.persistance.Permission;
+import com.example.security_demo.infrastructure.repository.IPermissionRepositoryJpa;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class PermissionService {
-    private final IPermissionRepository permissionRepository;
+    private final IPermissionRepositoryJpa permissionRepository;
     public Permission addPermission(Permission permission){
         if(permissionRepository.existsByScopeAndResourceCode(permission.getScope(), permission.getResourceCode())){
             throw new IllegalArgumentException("data existed");

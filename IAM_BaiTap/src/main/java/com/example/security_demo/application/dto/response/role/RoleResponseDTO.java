@@ -1,7 +1,7 @@
 package com.example.security_demo.application.dto.response.role;
 
 import com.example.security_demo.application.dto.response.permission.PermissionResponseDTO;
-import com.example.security_demo.domain.entity.Role;
+import com.example.security_demo.infrastructure.persistance.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

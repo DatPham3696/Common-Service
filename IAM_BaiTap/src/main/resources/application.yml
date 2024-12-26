@@ -57,7 +57,11 @@ spring:
           jwk-set-uri: http://localhost:8080/realms/IAM/protocol/openid-connect/certs
           jwk-set-uris:
             sso: http://localhost:8080/realms/IAM/protocol/openid-connect/certs
-            internal: http://localhost:8090/iam/api/users/certificate/.well-known/jwks.json
+            internal: http://localhost:8090/api/users/certificate/.well-known/jwks.json
+jwt:
+  jwk-set-uris:
+    sso: http://localhost:8080/realms/IAM/protocol/openid-connect/certs
+    internal: http://localhost:8090/api/users/certificate/.well-known/jwks.json
 idp:
   enabled: false
   url: http://localhost:8080
@@ -72,9 +76,9 @@ idp:
     user-info: /realms/IAM/protocol/openid-connect/userinfo
 springdoc:
   swagger-ui:
-    path: /iam/swagger-ui.html
+    path: /swagger-ui.html
   api-docs:
-    path: /iam/v3/api-docs
+    path: /v3/api-docs
     version: openapi_3_0
 logging:
   file:

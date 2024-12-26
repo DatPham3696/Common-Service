@@ -2,9 +2,9 @@ package com.example.security_demo.application.service;
 
 import com.evo.common.webapp.config.CommonService;
 import com.example.security_demo.application.config.JwtTokenUtils;
-import com.example.security_demo.domain.entity.RefreshToken;
-import com.example.security_demo.domain.repository.IRefreshTokenRepository;
-import com.example.security_demo.domain.repository.IUserRepository;
+import com.example.security_demo.infrastructure.persistance.RefreshToken;
+import com.example.security_demo.infrastructure.repository.IRefreshTokenRepositoryJpa;
+import com.example.security_demo.infrastructure.repository.IUserRepositoryJpa;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +18,8 @@ import java.util.Optional;
 public class RefreshTokenService {
     @Value("${spring.security.authentication.jwt.jwt_refresh_expiration}")
     private Long refreshTokenDuration;
-    private final IRefreshTokenRepository refreshTokenRepository;
-    private final IUserRepository userRepository;
+    private final IRefreshTokenRepositoryJpa refreshTokenRepository;
+    private final IUserRepositoryJpa userRepository;
     private final JwtTokenUtils jwtTokenUtils;
     private final CommonService commonService;
     public Optional<RefreshToken> findByToken(String token) {

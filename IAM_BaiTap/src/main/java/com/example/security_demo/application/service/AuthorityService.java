@@ -1,11 +1,11 @@
 package com.example.security_demo.application.service;
 
-import com.example.security_demo.domain.repository.*;
-import com.example.security_demo.domain.entity.Role;
-import com.example.security_demo.domain.entity.RolePermission;
-import com.example.security_demo.domain.entity.RoleUser;
-import com.example.security_demo.domain.entity.User;
-import com.example.security_demo.enums.EnumRole;
+import com.example.security_demo.infrastructure.persistance.Role;
+import com.example.security_demo.infrastructure.persistance.RolePermission;
+import com.example.security_demo.infrastructure.persistance.RoleUser;
+import com.example.security_demo.infrastructure.persistance.User;
+import com.example.security_demo.domain.enums.EnumRole;
+import com.example.security_demo.infrastructure.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,11 +17,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AuthorityService {
-    private final IRoleRepository roleRepository;
-    private final IPermissionRepository permissionRepository;
-    private final IRolePermissionRepository rolePermissionRepository;
-    private final IRoleUserRepository roleUserRepository;
-    private final IUserRepository userRepository;
+    private final IRoleRepositoryJpa roleRepository;
+    private final IPermissionRepositoryJpa permissionRepository;
+    private final IRolePermissionRepositoryJpa rolePermissionRepository;
+    private final IRoleUserRepositoryJpa roleUserRepository;
+    private final IUserRepositoryJpa userRepository;
     public List<String> getAuthority(String email){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("user not found"));
         RoleUser roleUser = roleUserRepository.findByUserId(user.getId());

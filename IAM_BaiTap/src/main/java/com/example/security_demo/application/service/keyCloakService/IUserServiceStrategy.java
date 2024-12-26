@@ -4,7 +4,7 @@ import com.example.security_demo.application.dto.request.user.EnableUserRequest;
 import com.example.security_demo.application.dto.request.user.RefreshTokenRequest;
 import com.example.security_demo.application.dto.request.user.RegisterDTO;
 import com.example.security_demo.application.dto.request.user.ResetPasswordRequest;
-import com.example.security_demo.exception.UserExistedException;
+import com.example.security_demo.domain.exception.UserExistedException;
 import org.springframework.http.ResponseEntity;
 
 public interface IUserServiceStrategy {

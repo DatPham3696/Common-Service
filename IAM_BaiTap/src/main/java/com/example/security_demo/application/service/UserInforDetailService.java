@@ -1,11 +1,11 @@
 package com.example.security_demo.application.service;
 
-import com.example.security_demo.domain.repository.*;
-import com.example.security_demo.domain.entity.Role;
-import com.example.security_demo.domain.entity.RolePermission;
-import com.example.security_demo.domain.entity.RoleUser;
-import com.example.security_demo.domain.entity.User;
-import com.example.security_demo.enums.EnumRole;
+import com.example.security_demo.infrastructure.persistance.Role;
+import com.example.security_demo.infrastructure.persistance.RolePermission;
+import com.example.security_demo.infrastructure.persistance.RoleUser;
+import com.example.security_demo.infrastructure.persistance.User;
+import com.example.security_demo.domain.enums.EnumRole;
+import com.example.security_demo.infrastructure.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,11 +21,11 @@ import java.util.List;
 @RequiredArgsConstructor
 //@AllArgsConstructor
 public class UserInforDetailService implements UserDetailsService {
-    private final IUserRepository userRepository;
-    private final IRoleRepository roleRepository;
-    private final IRoleUserRepository roleUserRepository;
-    private final IRolePermissionRepository rolePermissionRepository;
-    private final IPermissionRepository permissionRepository;
+    private final IUserRepositoryJpa userRepository;
+    private final IRoleRepositoryJpa roleRepository;
+    private final IRoleUserRepositoryJpa roleUserRepository;
+    private final IRolePermissionRepositoryJpa rolePermissionRepository;
+    private final IPermissionRepositoryJpa permissionRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

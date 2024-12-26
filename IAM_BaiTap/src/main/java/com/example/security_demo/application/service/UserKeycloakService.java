@@ -5,7 +5,7 @@ import com.example.security_demo.application.dto.request.identity.Credential;
 import com.example.security_demo.application.dto.request.identity.TokenExchangeParam;
 import com.example.security_demo.application.dto.request.identity.TokenExchangeResponse;
 import com.example.security_demo.application.dto.request.identity.UserCreationParam;
-import com.example.security_demo.domain.entity.Logout;
+import com.example.security_demo.infrastructure.persistance.Logout;
 import com.example.security_demo.application.service.keyCloakService.IdentityClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

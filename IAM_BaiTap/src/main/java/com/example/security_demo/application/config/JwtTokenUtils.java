@@ -1,9 +1,9 @@
 package com.example.security_demo.application.config;
 
 import com.evo.common.webapp.config.CommonService;
-import com.example.security_demo.domain.entity.RoleUser;
-import com.example.security_demo.domain.entity.User;
-import com.example.security_demo.domain.repository.*;
+import com.example.security_demo.infrastructure.persistance.RoleUser;
+import com.example.security_demo.infrastructure.persistance.User;
+import com.example.security_demo.infrastructure.repository.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,11 +15,11 @@ import java.util.function.Function;
 
 @Service
 public class JwtTokenUtils {
-    private final IRoleRepository roleRepository;
-    private final IPermissionRepository permissionRepository;
-    private final IRolePermissionRepository rolePermissionRepository;
-    private final IInvalidTokenRepository invalidTokenRepository;
-    private final IRoleUserRepository roleUserRepository;
+    private final IRoleRepositoryJpa roleRepository;
+    private final IPermissionRepositoryJpa permissionRepository;
+    private final IRolePermissionRepositoryJpa rolePermissionRepository;
+    private final IInvalidTokenRepositoryJpa invalidTokenRepository;
+    private final IRoleUserRepositoryJpa roleUserRepository;
     private final CommonService commonService;
 
     @Autowired
@@ -27,9 +27,9 @@ public class JwtTokenUtils {
     @Value("${spring.security.authentication.jwt.jwt_refresh_expiration}")
     private Long refreshTokenDuration;
 
-    public JwtTokenUtils(IRoleRepository roleRepository, IPermissionRepository permissionRepository,
-                         IRolePermissionRepository rolePermissionRepository, IInvalidTokenRepository invalidTokenRepository,
-                         IRoleUserRepository roleUserRepository, CommonService commonService) {
+    public JwtTokenUtils(IRoleRepositoryJpa roleRepository, IPermissionRepositoryJpa permissionRepository,
+                         IRolePermissionRepositoryJpa rolePermissionRepository, IInvalidTokenRepositoryJpa invalidTokenRepository,
+                         IRoleUserRepositoryJpa roleUserRepository, CommonService commonService) {
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
         this.rolePermissionRepository = rolePermissionRepository;

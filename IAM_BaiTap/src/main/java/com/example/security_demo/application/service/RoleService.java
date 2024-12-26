@@ -2,9 +2,9 @@ package com.example.security_demo.application.service;
 
 import com.example.security_demo.application.dto.request.role.SoftDeleteRoleRequest;
 import com.example.security_demo.application.dto.response.role.RolesResponse;
-import com.example.security_demo.domain.entity.Role;
-import com.example.security_demo.domain.repository.IRoleRepository;
-import com.example.security_demo.domain.repository.IUserRepository;
+import com.example.security_demo.infrastructure.persistance.Role;
+import com.example.security_demo.infrastructure.repository.IRoleRepositoryJpa;
+import com.example.security_demo.infrastructure.repository.IUserRepositoryJpa;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RoleService {
-    private final IUserRepository userRepository;
-    private final IRoleRepository roleRepository;
+    private final IUserRepositoryJpa userRepository;
+    private final IRoleRepositoryJpa roleRepository;
     public Role addRole(Role role){
         if(roleRepository.findByCode(role.getCode()).isPresent()){
             throw new IllegalArgumentException("code existed");

@@ -1,7 +1,8 @@
 package com.example.security_demo.domain.repository;
 
+
 import com.example.security_demo.application.dto.request.user.UserSearchRequest;
-import com.example.security_demo.domain.entity.User;
+import com.example.security_demo.infrastructure.persistance.User;
 
 import java.util.List;
 
