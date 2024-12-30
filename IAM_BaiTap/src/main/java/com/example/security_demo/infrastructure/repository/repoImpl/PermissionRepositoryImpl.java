@@ -1,32 +1,32 @@
 package com.example.security_demo.infrastructure.repository.repoImpl;
 
-import com.example.security_demo.infrastructure.persistance.Permission;
+import com.example.security_demo.infrastructure.entity.PermissionEntity;
 import com.example.security_demo.domain.repository.IPermissionRepository;
-import com.example.security_demo.infrastructure.repository.IPermissionRepositoryJpa;
+import com.example.security_demo.infrastructure.persistance.JpaPermissionRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
 public class PermissionRepositoryImpl implements IPermissionRepository {
-    private final IPermissionRepositoryJpa permissionRepositoryJpa;
+    private final JpaPermissionRepository permissionRepositoryJpa;
 
-    public PermissionRepositoryImpl(IPermissionRepositoryJpa permissionRepositoryJpa) {
+    public PermissionRepositoryImpl(JpaPermissionRepository permissionRepositoryJpa) {
         this.permissionRepositoryJpa = permissionRepositoryJpa;
     }
 
     @Override
-    public Optional<Permission> findByScope(String scope) {
+    public Optional<PermissionEntity> findByScope(String scope) {
         return permissionRepositoryJpa.findByScope(scope);
     }
 
     @Override
-    public Optional<Permission> findByResourceCode(String resourceCode) {
+    public Optional<PermissionEntity> findByResourceCode(String resourceCode) {
         return permissionRepositoryJpa.findByResourceCode(resourceCode);
     }
 
     @Override
-    public Optional<Permission> findByResourceCodeAndScope(String resourceCode, String scope) {
+    public Optional<PermissionEntity> findByResourceCodeAndScope(String resourceCode, String scope) {
         return permissionRepositoryJpa.findByResourceCodeAndScope(resourceCode, scope);
     }
 
@@ -41,7 +41,7 @@ public class PermissionRepositoryImpl implements IPermissionRepository {
     }
 
     @Override
-    public Optional<Permission> findById(Long permissionId) {
+    public Optional<PermissionEntity> findById(Long permissionId) {
         return permissionRepositoryJpa.findById(permissionId);
     }
 }

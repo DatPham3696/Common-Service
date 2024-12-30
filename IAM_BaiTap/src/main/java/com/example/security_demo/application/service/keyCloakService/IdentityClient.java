@@ -6,7 +6,7 @@ import com.example.security_demo.application.dto.request.user.ResetPasswordKclRe
 import com.example.security_demo.application.dto.request.identity.TokenExchangeParam;
 import com.example.security_demo.application.dto.request.identity.TokenExchangeResponse;
 import com.example.security_demo.application.dto.request.identity.UserCreationParam;
-import com.example.security_demo.infrastructure.persistance.Logout;
+import com.example.security_demo.infrastructure.entity.Logout;
 import feign.QueryMap;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

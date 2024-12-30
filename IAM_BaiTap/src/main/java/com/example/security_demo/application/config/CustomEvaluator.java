@@ -1,8 +1,8 @@
 //package com.example.security_demo.config;
 //
-//import com.example.security_demo.infrastructure.persistance.Role;
-//import com.example.security_demo.infrastructure.persistance.RoleUser;
-//import com.example.security_demo.infrastructure.persistance.User;
+//import com.example.security_demo.infrastructure.entity.Role;
+//import com.example.security_demo.infrastructure.entity.RoleUser;
+//import com.example.security_demo.infrastructure.entity.User;
 //import com.example.security_demo.enums.EnumRole;
 //import com.example.security_demo.repository.*;
 //import org.springframework.beans.factory.annotation.Autowired;

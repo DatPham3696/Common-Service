@@ -1,6 +1,6 @@
 package com.example.security_demo.domain.repository;
 
-import com.example.security_demo.infrastructure.persistance.UserProfile;
+import com.example.security_demo.infrastructure.entity.UserProfile;
 
 import java.util.Optional;
 

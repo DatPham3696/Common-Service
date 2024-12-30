@@ -1,11 +1,11 @@
 package com.example.security_demo.application.service;
 
-import com.example.security_demo.infrastructure.persistance.Role;
-import com.example.security_demo.infrastructure.persistance.RolePermission;
-import com.example.security_demo.infrastructure.persistance.RoleUser;
-import com.example.security_demo.infrastructure.persistance.User;
+import com.example.security_demo.infrastructure.entity.RoleEntity;
+import com.example.security_demo.infrastructure.entity.RolePermissionEntity;
+import com.example.security_demo.infrastructure.entity.RoleUserEntity;
+import com.example.security_demo.infrastructure.entity.UserEntity;
 import com.example.security_demo.domain.enums.EnumRole;
-import com.example.security_demo.infrastructure.repository.*;
+import com.example.security_demo.infrastructure.persistance.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,20 +21,20 @@ import java.util.List;
 @RequiredArgsConstructor
 //@AllArgsConstructor
 public class UserInforDetailService implements UserDetailsService {
-    private final IUserRepositoryJpa userRepository;
-    private final IRoleRepositoryJpa roleRepository;
-    private final IRoleUserRepositoryJpa roleUserRepository;
-    private final IRolePermissionRepositoryJpa rolePermissionRepository;
-    private final IPermissionRepositoryJpa permissionRepository;
+    private final JpaUserRepository userRepository;
+    private final JpaRoleRepository roleRepository;
+    private final JpaRoleUserRepository roleUserRepository;
+    private final JpaRolePermissionRepository rolePermissionRepository;
+    private final JpaPermissionRepository permissionRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("user not found"));
-        RoleUser roleUser = roleUserRepository.findByUserId(user.getId());
-        Role role = roleRepository.findById(roleUser.getRoleId()).orElseThrow(() -> new RuntimeException("role not found"));
-        String roleName = roleRepository.findById(roleUser.getRoleId()).map(Role::getCode).orElseThrow(() -> new RuntimeException("role not found"));
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("user not found"));
+        RoleUserEntity roleUser = roleUserRepository.findByUserId(user.getId());
+        RoleEntity role = roleRepository.findById(roleUser.getRoleId()).orElseThrow(() -> new RuntimeException("role not found"));
+        String roleName = roleRepository.findById(roleUser.getRoleId()).map(RoleEntity::getCode).orElseThrow(() -> new RuntimeException("role not found"));
         List<String> permissions = rolePermissionRepository.findAllByRoleId(roleUser.getRoleId()).stream()
-                .map(RolePermission::getPermissionId)
+                .map(RolePermissionEntity::getPermissionId)
                 .map(permissionId -> permissionRepository.findById(permissionId)
                         .map(permission -> permission.getResourceCode() + "_" + permission.getScope())
                         .orElse("Unknow permission"))
@@ -53,12 +53,12 @@ public class UserInforDetailService implements UserDetailsService {
         );
     }
     public UserDetails loadUserByUserUserId(String keyClkId) throws UsernameNotFoundException {
-        User user = userRepository.findByKeyclUserId(keyClkId);
-        RoleUser roleUser = roleUserRepository.findByUserId(user.getId());
-        Role role = roleRepository.findById(roleUser.getRoleId()).orElseThrow(() -> new RuntimeException("role not found"));
-        String roleName = roleRepository.findById(roleUser.getRoleId()).map(Role::getCode).orElseThrow(() -> new RuntimeException("role not found"));
+        UserEntity user = userRepository.findByKeyclUserId(keyClkId);
+        RoleUserEntity roleUser = roleUserRepository.findByUserId(user.getId());
+        RoleEntity role = roleRepository.findById(roleUser.getRoleId()).orElseThrow(() -> new RuntimeException("role not found"));
+        String roleName = roleRepository.findById(roleUser.getRoleId()).map(RoleEntity::getCode).orElseThrow(() -> new RuntimeException("role not found"));
         List<String> permissions = rolePermissionRepository.findAllByRoleId(roleUser.getRoleId()).stream()
-                .map(RolePermission::getPermissionId)
+                .map(RolePermissionEntity::getPermissionId)
                 .map(permissionId -> permissionRepository.findById(permissionId)
                         .map(permission -> permission.getResourceCode() + "_" + permission.getScope())
                         .orElse("Unknow permission"))

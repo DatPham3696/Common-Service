@@ -1,6 +1,6 @@
-package com.example.security_demo.infrastructure.persistance;
+package com.example.security_demo.infrastructure.entity;
 
-import com.example.security_demo.infrastructure.repository.IUserRepositoryJpa;
+import com.example.security_demo.infrastructure.persistance.JpaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class AuditorAwareImpl implements AuditorAware<String> {
     @Autowired
-    private IUserRepositoryJpa userRepository;
+    private JpaUserRepository userRepository;
 
     @Override
     public Optional<String> getCurrentAuditor() {

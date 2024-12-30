@@ -1,8 +1,8 @@
 package com.example.security_demo.infrastructure.repository.custom;
 
 import com.example.security_demo.application.dto.request.user.UserSearchRequest;
-import com.example.security_demo.infrastructure.persistance.User;
-import com.example.security_demo.infrastructure.repository.IUserRepositoryCustomJpa;
+import com.example.security_demo.infrastructure.entity.UserEntity;
+import com.example.security_demo.infrastructure.persistance.JpaUserRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -14,15 +14,15 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class UserCustomRepositoryImpl implements IUserRepositoryCustomJpa {
+public class UserCustomRepositoryImpl implements JpaUserRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public List<User> searchUser(UserSearchRequest request) {
+    public List<UserEntity> searchUser(UserSearchRequest request) {
         Map<String, Object> values = new HashMap<>();
         String sql = "select e from User e " + createWhereQuery(request, values) + createOrderQuery(request.getSort());
-        Query query = entityManager.createQuery(sql, User.class);
+        Query query = entityManager.createQuery(sql, UserEntity.class);
         values.forEach(query::setParameter);
         query.setFirstResult((request.getPage() - 1) * request.getSize());
         query.setMaxResults(request.getSize());

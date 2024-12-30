@@ -1,4 +1,4 @@
-package com.example.security_demo.infrastructure.persistance;
+package com.example.security_demo.infrastructure.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Table(name = "user_activity_log")
 @EntityListeners(AuditingEntityListener.class)
 @Builder
-public class UserActivityLog extends Auditable{
+public class UserActivityLogEntity extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

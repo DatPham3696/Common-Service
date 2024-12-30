@@ -1,9 +1,9 @@
 package com.example.security_demo.application.config;
 
 import com.evo.common.webapp.config.CommonService;
-import com.example.security_demo.infrastructure.persistance.RoleUser;
-import com.example.security_demo.infrastructure.persistance.User;
-import com.example.security_demo.infrastructure.repository.*;
+import com.example.security_demo.infrastructure.entity.RoleUserEntity;
+import com.example.security_demo.infrastructure.entity.UserEntity;
+import com.example.security_demo.infrastructure.persistance.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -15,11 +15,11 @@ import java.util.function.Function;
 
 @Service
 public class JwtTokenUtils {
-    private final IRoleRepositoryJpa roleRepository;
-    private final IPermissionRepositoryJpa permissionRepository;
-    private final IRolePermissionRepositoryJpa rolePermissionRepository;
-    private final IInvalidTokenRepositoryJpa invalidTokenRepository;
-    private final IRoleUserRepositoryJpa roleUserRepository;
+    private final JpaRoleRepository roleRepository;
+    private final JpaPermissionRepository permissionRepository;
+    private final JpaRolePermissionRepository rolePermissionRepository;
+    private final JpaInvalidTokenRepository invalidTokenRepository;
+    private final JpaRoleUserRepository roleUserRepository;
     private final CommonService commonService;
 
     @Autowired
@@ -27,9 +27,9 @@ public class JwtTokenUtils {
     @Value("${spring.security.authentication.jwt.jwt_refresh_expiration}")
     private Long refreshTokenDuration;
 
-    public JwtTokenUtils(IRoleRepositoryJpa roleRepository, IPermissionRepositoryJpa permissionRepository,
-                         IRolePermissionRepositoryJpa rolePermissionRepository, IInvalidTokenRepositoryJpa invalidTokenRepository,
-                         IRoleUserRepositoryJpa roleUserRepository, CommonService commonService) {
+    public JwtTokenUtils(JpaRoleRepository roleRepository, JpaPermissionRepository permissionRepository,
+                         JpaRolePermissionRepository rolePermissionRepository, JpaInvalidTokenRepository invalidTokenRepository,
+                         JpaRoleUserRepository roleUserRepository, CommonService commonService) {
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
         this.rolePermissionRepository = rolePermissionRepository;
@@ -38,32 +38,40 @@ public class JwtTokenUtils {
         this.commonService = commonService;
     }
 
-    public String generateToken(User user) {
-        RoleUser roleUser = roleUserRepository.findByUserId(user.getId());
-        String roleName = roleRepository.findById(roleUser.getRoleId()).get().getCode();
+    public String generateToken(UserEntity user) {
+        List<RoleUserEntity> roleUsers = roleUserRepository.findAllByUserId(user.getId());
+        List<String> roleNames = new ArrayList<>();
+        for (RoleUserEntity roleUser : roleUsers) {
+            roleNames.add(roleRepository.findById(roleUser.getRoleId()).get().getCode());
+        }
+        String roles = String.join(",", roleNames);
         long currentTimeMillis = System.currentTimeMillis();
         Date expirationDate = new Date(currentTimeMillis + 30 * 60 * 1000);
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", user.getUsername());
         claims.put("sub", user.getEmail());
         claims.put("exp", expirationDate);
-        claims.put("scope", roleName);
+        claims.put("scope", roles);
         claims.put("jti", UUID.randomUUID().toString());
         String JWT = Jwts.builder().claims(claims)
                 .signWith(tokenProvider.getKeyPair().getPrivate(), Jwts.SIG.RS256)
                 .compact();
         return JWT;
     }
-    public String generaRefreshToken(User user) {
-        RoleUser roleUser = roleUserRepository.findByUserId(user.getId());
-        String roleName = roleRepository.findById(roleUser.getRoleId()).get().getCode();
+    public String generaRefreshToken(UserEntity user) {
+        List<RoleUserEntity> roleUsers = roleUserRepository.findAllByUserId(user.getId());
+        List<String> roleNames = new ArrayList<>();
+        for (RoleUserEntity roleUser : roleUsers) {
+            roleNames.add(roleRepository.findById(roleUser.getRoleId()).get().getCode());
+        }
+        String roles = String.join(",", roleNames);
         long currentTimeMillis = System.currentTimeMillis();
         Date expirationDate = new Date(currentTimeMillis + refreshTokenDuration);
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", user.getUsername());
         claims.put("sub", user.getEmail());
         claims.put("exp", expirationDate);
-        claims.put("scope", roleName);
+        claims.put("scope", roles);
         claims.put("jti", UUID.randomUUID().toString());
         String JWT = Jwts.builder().claims(claims)
                 .signWith(tokenProvider.getKeyPair().getPrivate(), Jwts.SIG.RS256)

@@ -1,4 +1,4 @@
-package com.example.security_demo.infrastructure.persistance;
+package com.example.security_demo.infrastructure.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -21,12 +21,15 @@ public class Auditable {
     @CreatedDate
     @Column(name = "created_date", updatable = false)
     protected Instant createdDate = Instant.now().plus(7, ChronoUnit.HOURS);
+
     @LastModifiedDate
     @Column(name = "last_modified_at")
     protected Instant lastModifiedDate = Instant.now().plus(7, ChronoUnit.HOURS);
+
     @CreatedBy
     @Column(name = "created_by")
     protected String createdBy;
+
     @LastModifiedBy
     @Column(name = "last_modified_by")
     protected String lastModifiedBy;

@@ -18,6 +18,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class ExportDataController {
     private final ExportDataService exportDataService;
+
     @GetMapping("/export")
     public ResponseEntity<InputStreamResource> exportUserData(@ModelAttribute UserProfileSearchRequest request) throws IOException {
         ByteArrayInputStream byteArrayInputStream = exportDataService.exportUserData(request);
@@ -29,6 +30,7 @@ public class ExportDataController {
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(new InputStreamResource(byteArrayInputStream));
     }
+
     @GetMapping("/send-data-to-storage")
     public ResponseEntity<?> exportUserDataToStorage(@ModelAttribute UserProfileSearchRequest request) {
         try {

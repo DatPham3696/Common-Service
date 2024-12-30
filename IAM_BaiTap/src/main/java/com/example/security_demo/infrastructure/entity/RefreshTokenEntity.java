@@ -1,4 +1,4 @@
-package com.example.security_demo.infrastructure.persistance;
+package com.example.security_demo.infrastructure.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,19 +16,24 @@ import java.util.Date;
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "refresh_token")
-public class RefreshToken extends Auditable {
+public class RefreshTokenEntity extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "refresh_token", columnDefinition = "TEXT")
     private String refreshToken;
+
     @Column(name = "expiry_date")
     private Date expiryDate;
+
     @Column(name = "user_id")
     private String userId;
+
     @Column(name = "access_token_id")
     private String accessTokenId;
+
     @Column(name = "access_token_exp")
     private Date accessTokenExp;
 }

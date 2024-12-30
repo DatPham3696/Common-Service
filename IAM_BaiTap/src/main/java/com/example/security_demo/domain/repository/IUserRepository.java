@@ -1,25 +1,26 @@
 package com.example.security_demo.domain.repository;
 
-import com.example.security_demo.infrastructure.persistance.User;
+import com.example.security_demo.domain.domainEntity.User;
+import com.example.security_demo.infrastructure.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 public interface IUserRepository{
-    Optional<User> findByUserName(String userName);
+    Optional<UserEntity> findByUserName(String userName);
 
-    Optional<User> findById(String userId);
+    Optional<UserEntity> findById(String userId);
 
     boolean existsByEmail(String email);
 
-    Optional<User> findByEmail(String email);
+    Optional<UserEntity> findByEmail(String email);
 
-    User findByVerificationCode(String verificationCode);
+    UserEntity findByVerificationCode(String verificationCode);
 
-    User findByKeyclUserId(String keycloakUserId);
+    UserEntity findByKeyclUserId(String keycloakUserId);
 
-    Page<User> findByKeyWord(String keyword, Pageable pageable);
-    User save(User user);
+    Page<UserEntity> findByKeyWord(String keyword, Pageable pageable);
+    UserEntity save(User user);
 }
 

@@ -1,6 +1,6 @@
 package com.example.security_demo.presentation.rest;
 
-import com.example.security_demo.infrastructure.persistance.RolePermission;
+import com.example.security_demo.infrastructure.entity.RolePermissionEntity;
 import com.example.security_demo.application.service.RolePermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +18,9 @@ public class RolePermissionController {
 
     @PostMapping("/create-role-permission")
     @PreAuthorize("hasPermission('ROLE','CREATE')")
-    public ResponseEntity<RolePermission> createRolePermission(@RequestParam("code") String code,
-                                            @RequestParam("resource_code") String resourceCode,
-                                            @RequestParam("scope") String scope ){
+    public ResponseEntity<RolePermissionEntity> createRolePermission(@RequestParam("code") String code,
+                                                                     @RequestParam("resource_code") String resourceCode,
+                                                                     @RequestParam("scope") String scope ){
         return ResponseEntity.ok().body(rolePermissionService.addRolePermission(code,resourceCode, scope));
     }
 }

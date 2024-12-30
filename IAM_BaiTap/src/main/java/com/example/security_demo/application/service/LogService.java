@@ -1,6 +1,6 @@
 package com.example.security_demo.application.service;
 
-import com.example.security_demo.infrastructure.persistance.UserActivityLog;
+import com.example.security_demo.infrastructure.entity.UserActivityLogEntity;
 import com.example.security_demo.infrastructure.repository.repoImpl.UserActivityLogRepositoryImpl;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ public class LogService {
         this.userActivityLogRepository = userActivityLogRepository;
     }
 
-    public void saveLog(UserActivityLog userActivityLog) {
+    public void saveLog(UserActivityLogEntity userActivityLog) {
         userActivityLogRepository.save(userActivityLog);
     }
 }

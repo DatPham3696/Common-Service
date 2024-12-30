@@ -1,6 +1,6 @@
-package com.example.security_demo.infrastructure.repository;
+package com.example.security_demo.infrastructure.persistance;
 
-import com.example.security_demo.infrastructure.persistance.User;
+import com.example.security_demo.infrastructure.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,23 +13,23 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository // imple userRepocus
-public interface IUserRepositoryJpa extends JpaRepository<User, String> {
+public interface JpaUserRepository extends JpaRepository<UserEntity, String> {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    Optional<User> findByUserName(String userName);
+    Optional<UserEntity> findByUserName(String userName);
 
-    Optional<User> findById(String userId);
+    Optional<UserEntity> findById(String userId);
 
     boolean existsByEmail(String email);
 
-    Optional<User> findByEmail(String email);
+    Optional<UserEntity> findByEmail(String email);
 
-    User findByVerificationCode(String verificationCode);
+    UserEntity findByVerificationCode(String verificationCode);
 
-    User findByKeyclUserId(String keycloakUserId);
+    UserEntity findByKeyclUserId(String keycloakUserId);
 
     @Query(value = "SELECT * FROM users u " +
             "WHERE unaccent(u.username || ' ' || u.email || ' ' || u.phone_number || ' ' || u.address) " +
             "ILIKE unaccent(CONCAT('%', :keyword, '%'))", nativeQuery = true)
-    Page<User> findByKeyWord(@Param("keyword") String keyword, Pageable pageable);
+    Page<UserEntity> findByKeyWord(@Param("keyword") String keyword, Pageable pageable);
 }
 

@@ -1,4 +1,4 @@
-package com.example.security_demo.infrastructure.persistance;
+package com.example.security_demo.infrastructure.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Logout {
     private String client_id;
+
     private String client_secret;
+
     private String refresh_token;
 }

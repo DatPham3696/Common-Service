@@ -2,10 +2,10 @@ package com.example.security_demo.application.service.eiDataService;
 
 import com.evo.common.client.storage.StorageClient;
 import com.example.security_demo.application.dto.request.userProfile.UserProfileSearchRequest;
-import com.example.security_demo.infrastructure.persistance.UserActivityLog;
-import com.example.security_demo.infrastructure.persistance.UserProfile;
+import com.example.security_demo.infrastructure.entity.UserActivityLogEntity;
+import com.example.security_demo.infrastructure.entity.UserProfile;
 import com.example.security_demo.domain.enums.LogInfor;
-import com.example.security_demo.infrastructure.repository.IUserProfileRepositoryJpa;
+import com.example.security_demo.infrastructure.persistance.JpaUserProfileRepository;
 import com.example.security_demo.infrastructure.repository.custom.UserProfileImpl;
 import com.example.security_demo.application.service.CredentialService;
 
@@ -26,7 +26,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ExportDataService {
-    private final IUserProfileRepositoryJpa userProfileRepository;
+    private final JpaUserProfileRepository userProfileRepository;
     private final UserProfileImpl userProfile;
     private final CredentialService credentialService;
     private final StorageClient storageServiceClient;
@@ -81,7 +81,7 @@ public class ExportDataService {
         }
         workbook.write(outputStream);
         workbook.close();
-        logService.saveLog(UserActivityLog.builder()
+        logService.saveLog(UserActivityLogEntity.builder()
                 .action(LogInfor.EXPORTDATA.getDescription())
                 .browserId(httpRequest.getRemoteAddr())
                 .timestamp(LocalDateTime.now())

@@ -1,8 +1,8 @@
 package com.example.security_demo.infrastructure.repository.custom;
 
 import com.example.security_demo.application.dto.request.userProfile.UserProfileSearchRequest;
-import com.example.security_demo.infrastructure.persistance.UserProfile;
-import com.example.security_demo.infrastructure.repository.IUserProfileRepositoryCustomJpa;
+import com.example.security_demo.infrastructure.entity.UserProfile;
+import com.example.security_demo.infrastructure.persistance.JpaUserProfileRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class UserProfileImpl implements IUserProfileRepositoryCustomJpa {
+public class UserProfileImpl implements JpaUserProfileRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 

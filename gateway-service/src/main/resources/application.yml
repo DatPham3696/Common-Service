@@ -6,6 +6,9 @@ spring:
     name: gateway-service
   cloud:
     gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 5000
       discovery:
         locator:
           enabled: true
@@ -34,36 +37,6 @@ spring:
               args:
                 name: storageServiceCircuitBreaker
                 fallbackUri: forward:/fallback/storage
-  resilience4j:
-    circuitbreaker:
-      instances:
-        iamServiceCircuitBreaker:
-          slidingWindowSize: 10
-          failureRateThreshold: 50
-          waitDurationInOpenState: 20s
-          permittedNumberOfCallsInHalfOpenState: 3
-          slidingWindowType: 100
-          minimumNumberOfCalls: 20
-          recordExceptions:
-            - java.net.ConnectException
-            - java.net.SocketTimeoutException
-            - org.springframework.cloud.gateway.support.NotFoundException
-        storageServiceCircuitBreaker:
-          slidingWindowSize: 10
-          failureRateThreshold: 50
-          waitDurationInOpenState: 20s
-          permittedNumberOfCallsInHalfOpenState: 3
-          slidingWindowType: 100
-          minimumNumberOfCalls: 20
-    timeout:
-      instances:
-        default:
-          timeoutDuration: 10s
-    timelimiter:
-      instances:
-        iamServiceCircuitBreaker:
-          timeoutDuration: 10s
-          cancelRunningFuture: true
   eureka:
     client:
       service-url:
@@ -89,3 +62,34 @@ logging:
     org.springframework.cloud.gateway: DEBUG
     io.github.resilience4j: DEBUG
     org.springframework.cloud.gateway.filter.factory.RetryGatewayFilterFactory: DEBUG
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      iamServiceCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 20s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 20
+        recordExceptions:
+          - java.net.ConnectException
+          - java.net.SocketTimeoutException
+          - org.springframework.cloud.gateway.support.NotFoundException
+      storageServiceCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 20s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 20
+  timeout:
+    instances:
+      default:
+        timeoutDuration: 10s
+  timelimiter:
+    instances:
+      iamServiceCircuitBreaker:
+        timeoutDuration: 10s
+        cancelRunningFuture: true

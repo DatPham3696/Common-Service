@@ -7,6 +7,7 @@ import com.example.security_demo.application.dto.request.Page.SearchRequest;
 import com.example.security_demo.application.dto.request.user.*;
 import com.example.security_demo.application.dto.response.user.UserResponse;
 import com.example.security_demo.application.dto.response.user.UsersResponse;
+import com.example.security_demo.application.service.impl.UserCommandImpl;
 import com.example.security_demo.domain.exception.InvalidPasswordException;
 import com.example.security_demo.domain.exception.UserExistedException;
 import com.example.security_demo.domain.exception.UserNotFoundException;
@@ -38,15 +39,25 @@ public class UserController {
     private final TokenProvider tokenProvider;
     private final AuthorityServiceImplement authorityServiceImplement;
     private final AuthorityService authorityService;
-//    private final AuthorityServiceImplement authorityServiceImplement;
+    private final UserCommandImpl userCommand;
+
+    //    @PostMapping("/register")
+//    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO user) {
+//        try {
+//            return ResponseEntity.ok(userService.register(user));
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO user) {
         try {
-            return ResponseEntity.ok(userService.register(user));
+            return ResponseEntity.ok(userCommand.createUser(user));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     @PostMapping("/login")
     public String login(@Valid @RequestBody LoginRequestDTO userDTO, HttpServletRequest request) throws Exception {
@@ -70,7 +81,7 @@ public class UserController {
 
     @PutMapping("update/{userId}")
     @PreAuthorize("hasPermission('USER','UPDATE')")
-    public ResponseEntity<?> updateUserById(@Valid @PathVariable("userId") String userId,@Valid @RequestBody UpdateInforRequestDTO updateInforRequestDTO) {
+    public ResponseEntity<?> updateUserById(@Valid @PathVariable("userId") String userId, @Valid @RequestBody UpdateInforRequestDTO updateInforRequestDTO) {
         try {
             return ResponseEntity.ok(defaultUserService.updateUserInfo(userId, updateInforRequestDTO));
         } catch (UserNotFoundException ex) {
@@ -82,7 +93,7 @@ public class UserController {
 
     @PutMapping("change-password/{userId}")
     @PreAuthorize("hasPermission('USER','UPDATE')")
-    public ResponseEntity<?> changeUserPassword(@PathVariable("userId") String userId,@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<?> changeUserPassword(@PathVariable("userId") String userId, @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
             defaultUserService.changePassword(userId, changePasswordRequest);
             return ResponseEntity.ok("Change password successful");
@@ -103,7 +114,7 @@ public class UserController {
         return ResponseEntity.ok(defaultUserService.resetPasswordByToken(retakePasswordByTokenDTO));
     }
 
-//        @PostMapping("/logoutAccount")
+    //        @PostMapping("/logoutAccount")
 //    public ResponseEntity<?> logout(@RequestParam("authorization") String authorizationHeader,@RequestParam("refresh_token") String refreshToken){
 //        defaultUserService.logout(logoutRequest);
 //        return ResponseEntity.ok( defaultUserService.logout(logoutRequest));
@@ -156,28 +167,32 @@ public class UserController {
     public ResponseEntity<?> getUserInfor(@RequestHeader("authorization") String accessToken) {
         return ResponseEntity.ok().body(defaultUserService.getUserInfor(accessToken));
     }
+
     @GetMapping("/users-infor")
 //    @PreAuthorize("hasPermission('ADMIN','ADMIN')")
-    public ResponseEntity<UsersResponse<UserResponse>> getUsers(@ModelAttribute SearchRequest request){
+    public ResponseEntity<UsersResponse<UserResponse>> getUsers(@ModelAttribute SearchRequest request) {
         return ResponseEntity.ok().body(defaultUserService.getUsers(request));
     }
+
     @GetMapping("/users-search")
 //    @PreAuthorize("hasPermission('ADMIN','ADMIN')")
-    public ResponseEntity<UsersResponse<UserResponse>> getSearch(@ModelAttribute UserSearchRequest request){
+    public ResponseEntity<UsersResponse<UserResponse>> getSearch(@ModelAttribute UserSearchRequest request) {
         return ResponseEntity.ok().body(defaultUserService.getUsers(request));
     }
 
     @GetMapping("/verify-client-key/{clientId}/{clientSecret}")
-    public ResponseEntity<?> verifyClientKey (@PathVariable("clientId") String clientId,
-                                              @PathVariable("clientSecret") String clientSecret ){
-        return ResponseEntity.ok().body(verifyKeyService.verifyClientKey(clientId,clientSecret));
+    public ResponseEntity<?> verifyClientKey(@PathVariable("clientId") String clientId,
+                                             @PathVariable("clientSecret") String clientSecret) {
+        return ResponseEntity.ok().body(verifyKeyService.verifyClientKey(clientId, clientSecret));
     }
+
     @GetMapping("/certificate/.well-known/jwks.json")
-    public ResponseEntity<?> getPublicKey(){
+    public ResponseEntity<?> getPublicKey() {
         return ResponseEntity.ok(tokenProvider.jwkSet().toJSONObject());
     }
+
     @GetMapping("/{email}/authorities-by-email")
-    ResponseEntity<UserAuthority> getUserAuthority(@PathVariable("email") String email){
+    ResponseEntity<UserAuthority> getUserAuthority(@PathVariable("email") String email) {
         if (email == null || email.isEmpty()) {
             System.out.println("loi xay ra ");
             return ResponseEntity.badRequest().body(null);

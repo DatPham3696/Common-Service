@@ -2,9 +2,9 @@ package com.example.security_demo.application.service.storageService;
 
 import com.evo.common.UserAuthority;
 import com.evo.common.webapp.security.AuthorityService;
-import com.example.security_demo.infrastructure.persistance.User;
-import com.example.security_demo.infrastructure.repository.IRoleRepositoryJpa;
-import com.example.security_demo.infrastructure.repository.IUserRepositoryJpa;
+import com.example.security_demo.infrastructure.entity.UserEntity;
+import com.example.security_demo.infrastructure.persistance.JpaRoleRepository;
+import com.example.security_demo.infrastructure.persistance.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -15,12 +15,12 @@ import java.util.UUID;
 @Primary
 @RequiredArgsConstructor
 public class AuthorityServiceImplement implements AuthorityService {
-    private final IUserRepositoryJpa userRepository;
-    private final IRoleRepositoryJpa roleRepository;
+    private final JpaUserRepository userRepository;
+    private final JpaRoleRepository roleRepository;
     private final com.example.security_demo.application.service.AuthorityService authorityService;
     @Override
     public UserAuthority getUserAuthority(String email) {
-        User user = userRepository.findByEmail(email)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(()->new RuntimeException("Username not found during getUserAuthority() "));
         return UserAuthority.builder()
                 .userId(user.getId())

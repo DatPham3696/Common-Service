@@ -1,7 +1,7 @@
 package com.example.security_demo.presentation.rest;
 
 import com.example.security_demo.application.dto.request.permission.SoftDeletePermissionRequest;
-import com.example.security_demo.infrastructure.persistance.Permission;
+import com.example.security_demo.infrastructure.entity.PermissionEntity;
 import com.example.security_demo.application.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +18,7 @@ public class PermissionController {
 
     @PostMapping("/create-permission")
     @PreAuthorize("hasPermission('PERMISSION','CREATE')")
-    public ResponseEntity<Permission> addPermission(@RequestBody Permission permission) {
+    public ResponseEntity<PermissionEntity> addPermission(@RequestBody PermissionEntity permission) {
         return ResponseEntity.ok().body(permissionService.addPermission(permission));
     }
 

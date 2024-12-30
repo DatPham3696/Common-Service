@@ -1,4 +1,4 @@
-package com.example.security_demo.infrastructure.persistance;
+package com.example.security_demo.infrastructure.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

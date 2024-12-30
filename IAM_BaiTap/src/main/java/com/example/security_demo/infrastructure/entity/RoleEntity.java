@@ -1,4 +1,4 @@
-package com.example.security_demo.infrastructure.persistance;
+package com.example.security_demo.infrastructure.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "roles")
 @EntityListeners(AuditingEntityListener.class)
 @Builder
-public class Role extends Auditable{
+public class RoleEntity extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -23,12 +23,16 @@ public class Role extends Auditable{
 //    private String roleName;
     @Column(name = "deleted")
     private boolean deleted;
+
     @Column(name = "code")
     private String code;
+
     @Column(name = "description")
     private String description;
+
     @Column(name = "name")
     private String name;
+
     @Column(name = "is_admin")
     private boolean isAdmin;
 }

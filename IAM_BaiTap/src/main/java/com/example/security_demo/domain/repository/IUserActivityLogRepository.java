@@ -1,7 +1,7 @@
 package com.example.security_demo.domain.repository;
 
-import com.example.security_demo.infrastructure.persistance.UserActivityLog;
+import com.example.security_demo.infrastructure.entity.UserActivityLogEntity;
 
 public interface IUserActivityLogRepository{
-    UserActivityLog save(UserActivityLog userActivityLog);
+    UserActivityLogEntity save(UserActivityLogEntity userActivityLog);
 }

@@ -1,4 +1,4 @@
-package com.example.security_demo.infrastructure.persistance;
+package com.example.security_demo.infrastructure.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,36 +20,50 @@ import java.util.List;
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
-public class User extends Auditable implements UserDetails{
+public class UserEntity extends Auditable implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private String id;
+
     @Column(name = "username")
     private String userName;
+
     @Column(name = "password")
     private String passWord;
+
     @Column(name = "email")
     private String email;
+
     @Column(name = "phone_number")
     private String phoneNumber;
+
     @Column(name = "address")
     private String address;
+
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
+
     @Column(name = "email_verified")
     private boolean emailVerified = false;
+
     private String verificationCode;
+
     @Column(name = "profile_picture")
     private String profilePicture;
+
     private String keyclUserId;
+
     private Boolean deleted;
+
     @Column(name = "enabled")
     private boolean enabled;
+
     @Column(name = "is_root")
-    private Boolean isRoot ;
+    private Boolean isRoot;
+
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<? extends GrantedAuthority>  getAuthorities() {
         return List.of();
     }
 

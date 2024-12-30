@@ -2,9 +2,9 @@ package com.example.security_demo.application.service;
 
 import com.evo.common.webapp.config.CommonService;
 import com.example.security_demo.application.config.JwtTokenUtils;
-import com.example.security_demo.infrastructure.persistance.RefreshToken;
-import com.example.security_demo.infrastructure.repository.IRefreshTokenRepositoryJpa;
-import com.example.security_demo.infrastructure.repository.IUserRepositoryJpa;
+import com.example.security_demo.infrastructure.entity.RefreshTokenEntity;
+import com.example.security_demo.infrastructure.persistance.JpaRefreshTokenRepository;
+import com.example.security_demo.infrastructure.persistance.JpaUserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,16 +18,16 @@ import java.util.Optional;
 public class RefreshTokenService {
     @Value("${spring.security.authentication.jwt.jwt_refresh_expiration}")
     private Long refreshTokenDuration;
-    private final IRefreshTokenRepositoryJpa refreshTokenRepository;
-    private final IUserRepositoryJpa userRepository;
+    private final JpaRefreshTokenRepository refreshTokenRepository;
+    private final JpaUserRepository userRepository;
     private final JwtTokenUtils jwtTokenUtils;
     private final CommonService commonService;
-    public Optional<RefreshToken> findByToken(String token) {
+    public Optional<RefreshTokenEntity> findByToken(String token) {
         return refreshTokenRepository.findByRefreshToken(token);
     }
 
-    public RefreshToken createRefreshToken(String userId, String accessTokenId, Date accessTokenExp) {
-        RefreshToken refreshToken = new RefreshToken();
+    public RefreshTokenEntity createRefreshToken(String userId, String accessTokenId, Date accessTokenExp) {
+        RefreshTokenEntity refreshToken = new RefreshTokenEntity();
         refreshToken.setUserId(userId);
         refreshToken.setExpiryDate(new Date(System.currentTimeMillis() + refreshTokenDuration));
         refreshToken.setRefreshToken(jwtTokenUtils.generaRefreshToken(userRepository.findById(userId).get()));
@@ -36,7 +36,7 @@ public class RefreshTokenService {
         return refreshTokenRepository.save(refreshToken);
     }
 
-    public RefreshToken verifyRefreshToken(RefreshToken token) {
+    public RefreshTokenEntity verifyRefreshToken(RefreshTokenEntity token) {
         if (jwtTokenUtils.getExpirationTimeFromToken(token.getRefreshToken()).before(new Date())) {
             refreshTokenRepository.delete(token);
             throw new RuntimeException("Token was expired");

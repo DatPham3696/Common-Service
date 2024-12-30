@@ -4,6 +4,8 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,4 +23,5 @@ public class RegisterDTO {
     private String address;
     @Past(message = "Date of birth must be in the past")
     private LocalDate dateOfBirth;
+    List<Long> rolesId;
 }
