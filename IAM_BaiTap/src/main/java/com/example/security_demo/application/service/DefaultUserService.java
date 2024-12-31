@@ -8,8 +8,6 @@ import com.example.security_demo.application.dto.request.user.*;
 import com.example.security_demo.application.dto.response.user.*;
 import com.example.security_demo.application.mapper.UserCommandMapper;
 import com.example.security_demo.application.mapper.UserMapper;
-import com.example.security_demo.domain.command.RegisterCommand;
-import com.example.security_demo.domain.domainEntity.User;
 import com.example.security_demo.domain.enums.LogInfor;
 import com.example.security_demo.domain.exception.InvalidPasswordException;
 import com.example.security_demo.domain.exception.UserExistedException;
@@ -116,7 +114,7 @@ public class DefaultUserService {
         return false;
     }
 
-    public String login(LoginRequestDTO userDTO) {
+    public String login(LoginRequest userDTO) {
         UserEntity user = userRepositoryImpl.findByEmail(userDTO.getEmail()).orElseThrow(() -> new RuntimeException("Invalid inforr"));
         if (!passwordEncoder.matches(userDTO.getPassWord(), user.getPassword())) {
             throw new RuntimeException("invalid infor");
@@ -198,48 +196,48 @@ public class DefaultUserService {
                 .build();
     }
 
-    public UserResponse updateUserInfo(String userId, UpdateInforRequestDTO updateInforRequestDTO) throws UserNotFoundException,
-            UserExistedException {
-        UserEntity existingUser = userRepositoryImpl.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        existingUser.setUserName(updateInforRequestDTO.getUserName());
-        existingUser.setAddress(updateInforRequestDTO.getAddress());
-        existingUser.setPhoneNumber(updateInforRequestDTO.getPhoneNumber());
-        existingUser.setDateOfBirth(updateInforRequestDTO.getDateOfBirth());
-        UserEntity updatedUser = userRepositoryImpl.save(userMapper.fromUserEntity(existingUser));
-
-        RoleUserEntity roleUser = roleUserRepositoryImpl.findByUserId(updatedUser.getId());
-        RoleEntity role = roleRepository.findById(roleUser.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-
-        List<String> descriptions = rolePermissionRepository.findAllByRoleId(role.getId()).stream()
-                .map(RolePermissionEntity::getPermissionId)
-                .map(permissionId -> permissionRepositoryImpl.findById(permissionId)
-                        .map(PermissionEntity::getScope)
-                        .orElse("Unknown Permission"))
-                .toList();
-
-        String sub = "Modify infor";
-        String text = "Hello " + existingUser.getUsername() + ",\n\n" +
-                "Modify information successfully";
-        emailService.sendEmail(existingUser.getEmail(), sub, text);
-
-        logService.saveLog(UserActivityLogEntity.builder()
-                .action(LogInfor.UPDATE.getDescription())
-                .browserId(request.getRemoteAddr())
-                .userId(existingUser.getId())
-                .timestamp(LocalDateTime.now())
-                .build());
-
-        return UserResponse.builder()
-                .userName(updatedUser.getUsername())
-                .email(updatedUser.getEmail())
-                .address(updatedUser.getAddress())
-                .dateOfBirth(updatedUser.getDateOfBirth())
-                .roleName(role.getCode())
-                .perDescription(descriptions)
-                .build();
-    }
+//    public UserResponse updateUserInfo(String userId, UpdateInforRequest updateInforRequestDTO) throws UserNotFoundException,
+//            UserExistedException {
+//        UserEntity existingUser = userRepositoryImpl.findById(userId)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+//        existingUser.setUserName(updateInforRequestDTO.getUserName());
+//        existingUser.setAddress(updateInforRequestDTO.getAddress());
+//        existingUser.setPhoneNumber(updateInforRequestDTO.getPhoneNumber());
+//        existingUser.setDateOfBirth(updateInforRequestDTO.getDateOfBirth());
+//        UserEntity updatedUser = userRepositoryImpl.save(userMapper.fromUserEntity(existingUser));
+//
+//        RoleUserEntity roleUser = roleUserRepositoryImpl.findByUserId(updatedUser.getId());
+//        RoleEntity role = roleRepository.findById(roleUser.getRoleId())
+//                .orElseThrow(() -> new RuntimeException("Role not found"));
+//
+//        List<String> descriptions = rolePermissionRepository.findAllByRoleId(role.getId()).stream()
+//                .map(RolePermissionEntity::getPermissionId)
+//                .map(permissionId -> permissionRepositoryImpl.findById(permissionId)
+//                        .map(PermissionEntity::getScope)
+//                        .orElse("Unknown Permission"))
+//                .toList();
+//
+//        String sub = "Modify infor";
+//        String text = "Hello " + existingUser.getUsername() + ",\n\n" +
+//                "Modify information successfully";
+//        emailService.sendEmail(existingUser.getEmail(), sub, text);
+//
+//        logService.saveLog(UserActivityLogEntity.builder()
+//                .action(LogInfor.UPDATE.getDescription())
+//                .browserId(request.getRemoteAddr())
+//                .userId(existingUser.getId())
+//                .timestamp(LocalDateTime.now())
+//                .build());
+//
+//        return UserResponse.builder()
+//                .userName(updatedUser.getUsername())
+//                .email(updatedUser.getEmail())
+//                .address(updatedUser.getAddress())
+//                .dateOfBirth(updatedUser.getDateOfBirth())
+//                .roleName(role.getCode())
+//                .perDescription(descriptions)
+//                .build();
+//    }
 
     @PostAuthorize("returnObject.email == authentication.name")
     public ChangePasswordResponse changePassword(String userId, ChangePasswordRequest changePasswordRequest) throws InvalidPasswordException {
@@ -265,7 +263,7 @@ public class DefaultUserService {
         return "Open gmail and check for our email to reset your password";
     }
 
-    public String resetPasswordByToken(RetakePasswordByTokenDTO retakePasswordByTokenDTO) {
+    public String resetPasswordByToken(RetakePasswordByTokenRequest retakePasswordByTokenDTO) {
         String email = jwtTokenUtils.getSubFromToken(retakePasswordByTokenDTO.getToken());
         UserEntity user = userRepositoryImpl.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Not found user"));
         user.setPassWord(passwordEncoder.encode(retakePasswordByTokenDTO.getNewPassword()));

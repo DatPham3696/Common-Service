@@ -1,0 +1,10 @@
+package com.example.security_demo.application.mapper;
+
+import com.example.security_demo.domain.domainEntity.Role;
+import com.example.security_demo.infrastructure.entity.RoleEntity;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface RoleMapper {
+    RoleEntity fromRoleDomain(Role role);
+}

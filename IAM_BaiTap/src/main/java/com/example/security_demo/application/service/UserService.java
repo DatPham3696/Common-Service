@@ -2,14 +2,13 @@ package com.example.security_demo.application.service;
 
 import com.example.security_demo.application.dto.request.user.EnableUserRequest;
 import com.example.security_demo.application.dto.request.user.RefreshTokenRequest;
-import com.example.security_demo.application.dto.request.user.RegisterDTO;
+import com.example.security_demo.application.dto.request.user.RegisterRequest;
 import com.example.security_demo.application.dto.request.user.ResetPasswordRequest;
 import com.example.security_demo.application.mapper.UserCommandMapper;
 import com.example.security_demo.application.service.impl.UserCommandImpl;
 import com.example.security_demo.domain.exception.UserExistedException;
 import com.example.security_demo.application.service.keyCloakService.IUserServiceStrategy;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ public class UserService implements IUserServiceStrategy {
     private boolean keycloakEnabled;
     private final UserCommandImpl userCommand;
     @Override
-    public ResponseEntity<?> register(RegisterDTO registerDTO) throws UserExistedException {
+    public ResponseEntity<?> register(RegisterRequest registerDTO) throws UserExistedException {
         if (keycloakEnabled) {
             return ResponseEntity.ok().body(userKeycloakService.createKeycloakUser(registerDTO));
         } else {

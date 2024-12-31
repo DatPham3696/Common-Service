@@ -1,6 +1,6 @@
 package com.example.security_demo.application.dto.response.role;
 
-import com.example.security_demo.application.dto.response.permission.PermissionResponseDTO;
+import com.example.security_demo.application.dto.response.permission.PermissionResponse;
 import com.example.security_demo.infrastructure.entity.RoleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +13,11 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RoleResponseDTO {
+public class RoleResponse {
     private String roleName;
-    private Set<PermissionResponseDTO> permission;
-    public static RoleResponseDTO fromRole(RoleEntity role){
-        return RoleResponseDTO.builder()
+    private Set<PermissionResponse> permission;
+    public static RoleResponse fromRole(RoleEntity role){
+        return RoleResponse.builder()
                 .roleName(role.getCode())
 //                .permission(role.getPermissions().stream().map(PermissionResponseDTO::fromPermission).collect(Collectors.toSet()))
                 .build();

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequestDTO {
+public class LoginRequest {
     @Email(message = "Invalid email format")
     private String email;
     @Size(min = 6, message = "Password must be at least 6 characters")

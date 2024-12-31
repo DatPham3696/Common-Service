@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface JpaRoleUserRepository extends JpaRepository<RoleUserEntity, Long> {
     RoleUserEntity findByUserId(String userId);
+    RoleUserEntity findByRoleId(Long roleId);
     List<RoleUserEntity> findAllByUserId(String userId);
 //    Optional<String> find
 }

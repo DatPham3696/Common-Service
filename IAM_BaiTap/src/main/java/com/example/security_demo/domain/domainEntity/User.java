@@ -1,13 +1,12 @@
 package com.example.security_demo.domain.domainEntity;
-import com.example.security_demo.application.dto.request.user.RegisterDTO;
-import com.example.security_demo.application.dto.request.user.UpdateInforRequestDTO;
-import com.example.security_demo.domain.command.RegisterCommand;
-import com.example.security_demo.infrastructure.entity.RoleEntity;
-import com.example.security_demo.infrastructure.entity.RoleUserEntity;
+
+import com.example.security_demo.domain.command.RegisterCmd;
+import com.example.security_demo.domain.command.UpdateInforCmd;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -20,7 +19,8 @@ import java.util.function.Supplier;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends Auditable{
+@Slf4j
+public class User extends Auditable {
     private String id;
     private String userName;
     private String passWord;
@@ -34,14 +34,15 @@ public class User extends Auditable{
     private String keyclUserId;
     private Boolean deleted;
     private boolean enabled;
-    private Boolean isRoot ;
+    private Boolean isRoot;
     private List<RoleUser> roleUser = new ArrayList<>();
 
-    public User(RegisterCommand cmd, // veesiet gon lai la registercmd
+    public User(RegisterCmd cmd, // veesiet gon lai la registercmd
                 PasswordEncoder passwordEncoder,
                 String verificationCode,
                 Supplier<String> userKclId,
-                List<Long> rolesExist){
+                List<Long> rolesExist) {
+
         this.id = UUID.randomUUID().toString();
         this.userName = cmd.getUserName();
         this.passWord = passwordEncoder.encode(cmd.getPassWord());
@@ -56,23 +57,32 @@ public class User extends Auditable{
         this.enabled = false;
         this.assignUserRole(rolesExist);
     }
-    public void assignUserRole(List<Long> roleExits){
-        if(roleExits != null && !roleExits.isEmpty()){
+
+    public void assignUserRole(List<Long> roleExits) {
+        if (roleExits != null && !roleExits.isEmpty()) {
+            this.roleUser = new ArrayList<>();
             roleExits.forEach(roleId -> {
                 RoleUser roleUser = new RoleUser();
+//                roleUser.setId(15L);
                 roleUser.setUserId(this.id);
                 roleUser.setRoleId(roleId);
+                log.info(this.roleUser.toString());
                 this.roleUser.add(roleUser);
             });
         }
     }
 
-    public User update(UpdateInforRequestDTO updateInforRequestDTO){
-        return User.builder()
-                .userName(updateInforRequestDTO.getUserName())
-                .phoneNumber(updateInforRequestDTO.getPhoneNumber())
-                .address(updateInforRequestDTO.getAddress())
-                .dateOfBirth(updateInforRequestDTO.getDateOfBirth())
-                .build();
+    public void update(UpdateInforCmd updateInforCommand, PasswordEncoder passwordEncoder) {
+        this.userName = updateInforCommand.getUserName();
+        this.phoneNumber = updateInforCommand.getPhoneNumber();
+        this.passWord = passwordEncoder.encode(updateInforCommand.getPassWord());
+        this.address = updateInforCommand.getAddress();
+        this.dateOfBirth = updateInforCommand.getDateOfBirth();
     }
+
+    public void softDelete() {
+        this.deleted = true;
+    }
+
+
 }

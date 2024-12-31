@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInforKeycloakDTO {
+public class UserInforKeycloakRequest {
     private String grant_type;
     private String client_id;
     private String client_secret;

@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RegisterDTO {
+public class RegisterRequest {
     @Email(message = "Invalid email format")
     private String email;
     @NotBlank(message = "Username is required")

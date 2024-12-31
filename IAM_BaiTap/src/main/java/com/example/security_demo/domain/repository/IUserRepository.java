@@ -12,9 +12,13 @@ public interface IUserRepository{
 
     Optional<UserEntity> findById(String userId);
 
+    Optional<User> findUserById(String userId);
+
     boolean existsByEmail(String email);
 
     Optional<UserEntity> findByEmail(String email);
+
+    Optional<User> findUserByEmail(String email);
 
     UserEntity findByVerificationCode(String verificationCode);
 
@@ -22,5 +26,6 @@ public interface IUserRepository{
 
     Page<UserEntity> findByKeyWord(String keyword, Pageable pageable);
     UserEntity save(User user);
+    void saveAfterAddRole(User user);
 }
 

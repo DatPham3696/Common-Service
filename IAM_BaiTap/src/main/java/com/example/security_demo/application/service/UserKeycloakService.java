@@ -27,7 +27,7 @@ public class UserKeycloakService {
     private boolean keycloakEnabled;
     private final IdentityClient identityClient;
 
-    public ResponseEntity<?> createKeycloakUser(RegisterDTO registerDTO) {
+    public ResponseEntity<?> createKeycloakUser(RegisterRequest registerDTO) {
         return identityClient.createUser("Bearer " + token().getAccessToken(), UserCreationParam.builder()
                 .username(registerDTO.getUserName())
                 .firstName(registerDTO.getUserName())
@@ -44,7 +44,7 @@ public class UserKeycloakService {
 
     }
 
-    public String getKeycloakUserId(RegisterDTO registerDTO) {
+    public String getKeycloakUserId(RegisterRequest registerDTO) {
         return extractUserId(createKeycloakUser(registerDTO));
     }
 

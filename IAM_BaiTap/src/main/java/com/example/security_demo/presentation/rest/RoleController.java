@@ -1,6 +1,8 @@
 package com.example.security_demo.presentation.rest;
 
+import com.example.security_demo.application.dto.request.role.CreateRoleRequest;
 import com.example.security_demo.application.dto.request.role.SoftDeleteRoleRequest;
+import com.example.security_demo.application.service.impl.RoleCommandImpl;
 import com.example.security_demo.infrastructure.entity.RoleEntity;
 import com.example.security_demo.application.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class RoleController {
     private final RoleService roleService;
+    private final RoleCommandImpl roleCommand;
 
     @PostMapping("/create-role")
     @PreAuthorize("hasPermission('ROLE','CREATE')")
-    public ResponseEntity<RoleEntity> addRole(@RequestBody RoleEntity role) {
-        RoleEntity createdRole = roleService.addRole(role);
-        return ResponseEntity.ok().body(createdRole);
+    public ResponseEntity<?> addRole(@RequestBody CreateRoleRequest request) {
+//        RoleEntity createdRole = roleService.addRole(role);
+        return ResponseEntity.ok().body(roleCommand.createRole(request));
     }
 
     @PostMapping("/soft-role-delete/{code}")

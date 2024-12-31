@@ -9,4 +9,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface RoleUserMapper {
     List<RoleUserEntity> toRoleEntityList(List<RoleUser> domain);
+    List<RoleUser> toRoleUserDomainList(List<RoleUserEntity> roleUserEntityList);
+    RoleUser toRoleUserDomain(RoleUserEntity roleUserEntity);
+    RoleUserEntity toRoleUserEntity(RoleUser roleUser);
 }

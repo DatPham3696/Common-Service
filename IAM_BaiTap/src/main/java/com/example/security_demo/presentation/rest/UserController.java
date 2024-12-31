@@ -50,7 +50,7 @@ public class UserController {
 //        }
 //    }
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterDTO user) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest user) {
         try {
             return ResponseEntity.ok(userCommand.createUser(user));
         } catch (Exception e) {
@@ -60,7 +60,7 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public String login(@Valid @RequestBody LoginRequestDTO userDTO, HttpServletRequest request) throws Exception {
+    public String login(@Valid @RequestBody LoginRequest userDTO, HttpServletRequest request) throws Exception {
         try {
             return defaultUserService.login(userDTO);
         } catch (Exception e) {
@@ -79,19 +79,18 @@ public class UserController {
         return ResponseEntity.ok(defaultUserService.getUserById(userId));
     }
 
-    @PutMapping("update/{userId}")
+    @PutMapping("update")
     @PreAuthorize("hasPermission('USER','UPDATE')")
-    public ResponseEntity<?> updateUserById(@Valid @PathVariable("userId") String userId, @Valid @RequestBody UpdateInforRequestDTO updateInforRequestDTO) {
+    public ResponseEntity<?> updateUserById(@Valid @RequestBody UpdateInforRequest updateInforRequest) {
         try {
-            return ResponseEntity.ok(defaultUserService.updateUserInfo(userId, updateInforRequestDTO));
-        } catch (UserNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+//            return ResponseEntity.ok(defaultUserService.updateUserInfo(userId, updateInforRequestDTO));
+            return ResponseEntity.ok(userCommand.updateUser(updateInforRequest));
         } catch (UserExistedException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
-    @PutMapping("change-password/{userId}")
+    @PutMapping("/{userId}/change-password")
     @PreAuthorize("hasPermission('USER','UPDATE')")
     public ResponseEntity<?> changeUserPassword(@PathVariable("userId") String userId, @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
@@ -110,7 +109,7 @@ public class UserController {
 
     @PostMapping("/reset-password-token")
     @PreAuthorize("hasPermission('USER','UPDATE')")
-    public ResponseEntity<?> resetPasswordByToken(@Valid @RequestBody RetakePasswordByTokenDTO retakePasswordByTokenDTO) {
+    public ResponseEntity<?> resetPasswordByToken(@Valid @RequestBody RetakePasswordByTokenRequest retakePasswordByTokenDTO) {
         return ResponseEntity.ok(defaultUserService.resetPasswordByToken(retakePasswordByTokenDTO));
     }
 
@@ -144,10 +143,10 @@ public class UserController {
         return ResponseEntity.ok().body(userKeycloakService.logout(authorizationHeader, refreshToken));
     }
 
-    @PostMapping("soft-delete/{userId}")
+    @PostMapping("{userId}/soft-delete")
     @PreAuthorize("hasPermission('USER','UPDATE')")
-    public ResponseEntity<?> softDeleted(@PathVariable("userId") String userId, @RequestBody SoftDeleteRequest request) {
-        return ResponseEntity.ok().body(defaultUserService.deletedSoft(userId, request));
+    public ResponseEntity<?> softDeleted(@PathVariable("userId") String userId) {
+        return ResponseEntity.ok().body(userCommand.softDeleted(userId));
     }
 
     @PostMapping("/enable-user/{userId}")
@@ -198,5 +197,9 @@ public class UserController {
             return ResponseEntity.badRequest().body(null);
         }
         return ResponseEntity.ok(authorityServiceImplement.getUserAuthority(email));
+    }
+    @PostMapping("update-user-role")
+    ResponseEntity<?> updateUserRole(@RequestBody RoleUserRequest roleUserRequest){
+        return ResponseEntity.ok(userCommand.addRoleUser(roleUserRequest));
     }
 }

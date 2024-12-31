@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PermissionResponseDTO {
+public class PermissionResponse {
     private String description;
-    public static PermissionResponseDTO fromPermission(PermissionEntity permission){
-        return PermissionResponseDTO.builder()
+    public static PermissionResponse fromPermission(PermissionEntity permission){
+        return PermissionResponse.builder()
                 .description(permission.getScope())
                 .build();
     }
