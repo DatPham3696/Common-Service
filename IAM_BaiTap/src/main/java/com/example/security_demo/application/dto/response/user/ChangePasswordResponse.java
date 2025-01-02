@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ChangePasswordResponse {
-    private String email;
+
+  private String email;
 }

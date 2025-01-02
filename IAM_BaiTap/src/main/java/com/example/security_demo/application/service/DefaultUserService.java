@@ -10,15 +10,13 @@ import com.example.security_demo.application.mapper.UserCommandMapper;
 import com.example.security_demo.application.mapper.UserMapper;
 import com.example.security_demo.domain.enums.LogInfor;
 import com.example.security_demo.domain.exception.InvalidPasswordException;
-import com.example.security_demo.domain.exception.UserExistedException;
-import com.example.security_demo.domain.exception.UserNotFoundException;
-import com.example.security_demo.infrastructure.entity.*;
-import com.example.security_demo.infrastructure.persistance.*;
-import com.example.security_demo.infrastructure.repository.custom.UserCustomRepositoryImpl;
-import com.example.security_demo.infrastructure.repository.repoImpl.PermissionRepositoryImpl;
-import com.example.security_demo.infrastructure.repository.repoImpl.RoleRepositoryImpl;
-import com.example.security_demo.infrastructure.repository.repoImpl.RoleUserRepositoryImpl;
-import com.example.security_demo.infrastructure.repository.repoImpl.UserRepositoryImpl;
+import com.example.security_demo.infrastructure.persistance.entity.*;
+import com.example.security_demo.infrastructure.persistance.repository.*;
+import com.example.security_demo.infrastructure.persistance.repository.custom.UserCustomRepositoryImpl;
+import com.example.security_demo.infrastructure.persistance.repository.repoImpl.PermissionRepositoryImpl;
+import com.example.security_demo.infrastructure.persistance.repository.repoImpl.RoleRepositoryImpl;
+import com.example.security_demo.infrastructure.persistance.repository.repoImpl.RoleUserRepositoryImpl;
+import com.example.security_demo.infrastructure.persistance.repository.repoImpl.UserRepositoryImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -45,30 +43,31 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Slf4j
 public class DefaultUserService {
-    private final JpaUserRepository userRepository;
-    private final JpaRoleRepository roleRepository;
-    private final JwtTokenUtils jwtTokenUtils;
-    private final PasswordEncoder passwordEncoder;
-    private final JpaPermissionRepository permissionRepository;
-    private final JpaRolePermissionRepository rolePermissionRepository;
-    private final EmailService emailService;
-    private final JpaInvalidTokenRepository invalidTokenRepository;
-    //    private final RedisService redisService;
-    private final LogService logService;
-    private final JpaRoleUserRepository roleUserRepository;
-    private final HttpServletRequest request;
-    private final RefreshTokenService refreshTokenService;
-    private final UserKeycloakService userKeycloakService;
-    private final UserCustomRepositoryImpl userRepositoryCustomImpl;
-    private final CommonService commonService;
-    private final RedisService redisService;
-    private final UserRepositoryImpl userRepositoryImpl;
-    private final RoleRepositoryImpl roleRepositoryImpl;
-    private final PermissionRepositoryImpl permissionRepositoryImpl;
-    private final RoleUserRepositoryImpl roleUserRepositoryImpl;
-    private final RoleService roleService;
-    private final UserCommandMapper userCommandMapper;
-    private final UserMapper userMapper;
+
+  private final JpaUserRepository userRepository;
+  private final JpaRoleRepository roleRepository;
+  private final JwtTokenUtils jwtTokenUtils;
+  private final PasswordEncoder passwordEncoder;
+  private final JpaPermissionRepository permissionRepository;
+  private final JpaRolePermissionRepository rolePermissionRepository;
+  private final EmailService emailService;
+  private final JpaInvalidTokenRepository invalidTokenRepository;
+  //    private final RedisService redisService;
+  private final LogService logService;
+  private final JpaRoleUserRepository roleUserRepository;
+  private final HttpServletRequest request;
+  private final RefreshTokenService refreshTokenService;
+  private final UserKeycloakService userKeycloakService;
+  private final UserCustomRepositoryImpl userRepositoryCustomImpl;
+  private final CommonService commonService;
+  private final RedisService redisService;
+  private final UserRepositoryImpl userRepositoryImpl;
+  private final RoleRepositoryImpl roleRepositoryImpl;
+  private final PermissionRepositoryImpl permissionRepositoryImpl;
+  private final RoleUserRepositoryImpl roleUserRepositoryImpl;
+  private final RoleService roleService;
+  private final UserCommandMapper userCommandMapper;
+  private final UserMapper userMapper;
 
 //    public String register(RegisterCommand registerCommand) throws UserExistedException {
 //        if (userRepositoryImpl.existsByEmail(registerCommand.getEmail())) {
@@ -104,97 +103,109 @@ public class DefaultUserService {
 //        return "Please check your verify code in your email";
 //    }
 
-    public boolean confirmRegisterCode(String code) {
-        UserEntity user = userRepositoryImpl.findByVerificationCode(code);
-        if (user != null && !user.isEmailVerified()) {
-            user.setEmailVerified(true);
-            userRepository.save(user);
-            return true;
-        }
-        return false;
+  public boolean confirmRegisterCode(String code) {
+    UserEntity user = userRepositoryImpl.findByVerificationCode(code);
+    if (user != null && !user.isEmailVerified()) {
+      user.setEmailVerified(true);
+      userRepository.save(user);
+      return true;
     }
+    return false;
+  }
 
-    public String login(LoginRequest userDTO) {
-        UserEntity user = userRepositoryImpl.findByEmail(userDTO.getEmail()).orElseThrow(() -> new RuntimeException("Invalid inforr"));
-        if (!passwordEncoder.matches(userDTO.getPassWord(), user.getPassword())) {
-            throw new RuntimeException("invalid infor");
-        }
-        String verificationCode = UUID.randomUUID().toString().substring(0, 6);
-        emailService.sendEmail(user.getEmail(), "Verify login code", "Please using this code to complete your login:\n " +
-                "http://localhost:8080/confirmemail?code=" + verificationCode);
-        redisService.saveStringToRedis(user.getEmail(), verificationCode, 5, TimeUnit.MINUTES);
-        return "Please check your verify code in your email ";
+  public String login(LoginRequest userDTO) {
+    UserEntity user = userRepositoryImpl.findByEmail(userDTO.getEmail())
+        .orElseThrow(() -> new RuntimeException("Invalid inforr"));
+    if (!passwordEncoder.matches(userDTO.getPassWord(), user.getPassword())) {
+      throw new RuntimeException("invalid infor");
     }
+    String verificationCode = UUID.randomUUID().toString().substring(0, 6);
+    emailService.sendEmail(user.getEmail(), "Verify login code",
+        "Please using this code to complete your login:\n " +
+            "http://localhost:8080/confirmemail?code=" + verificationCode);
+    redisService.saveStringToRedis(user.getEmail(), verificationCode, 5, TimeUnit.MINUTES);
+    return "Please check your verify code in your email ";
+  }
 
-    public JwtResponse verifyLoginGenerateToken(String email, String code) {
-        String storeCode = redisService.getStringFromRedis(email);
-        if (storeCode != null && storeCode.equals(code)) {
-            redisService.deleteFromRedis(email);
-            UserEntity user = userRepositoryImpl.findByEmail(email).orElseThrow(() -> new RuntimeException("Invalid inforr"));
-            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            SecurityContext securityContextHolder = SecurityContextHolder.getContext();
-            securityContextHolder.setAuthentication(authentication);
+  public JwtResponse verifyLoginGenerateToken(String email, String code) {
+    String storeCode = redisService.getStringFromRedis(email);
+    if (storeCode != null && storeCode.equals(code)) {
+      redisService.deleteFromRedis(email);
+      UserEntity user = userRepositoryImpl.findByEmail(email)
+          .orElseThrow(() -> new RuntimeException("Invalid inforr"));
+      Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
+          user.getAuthorities());
+      SecurityContext securityContextHolder = SecurityContextHolder.getContext();
+      securityContextHolder.setAuthentication(authentication);
 
-            logService.saveLog(UserActivityLogEntity.builder()
-                    .action(LogInfor.LOGIN.getDescription())
-                    .browserId(request.getRemoteAddr())
-                    .userId(user.getId())
-                    .timestamp(LocalDateTime.now())
-                    .build());
+      logService.saveLog(UserActivityLogEntity.builder()
+          .action(LogInfor.LOGIN.getDescription())
+          .browserId(request.getRemoteAddr())
+          .userId(user.getId())
+          .timestamp(LocalDateTime.now())
+          .build());
 //        refreshTokenService.deleteByUserId(user.getId());
 //        commonService.deleteFromRedis();
-            String token = jwtTokenUtils.generateToken(user);
-            return JwtResponse.builder()
-                    .accessToken(token)
-                    .refreshToken(jwtTokenUtils.generaRefreshToken(user))
-                    .build();
-        } else {
-            throw new RuntimeException("Invalid code");
-        }
+      String token = jwtTokenUtils.generateToken(user);
+      return JwtResponse.builder()
+          .accessToken(token)
+          .refreshToken(jwtTokenUtils.generaRefreshToken(user))
+          .build();
+    } else {
+      throw new RuntimeException("Invalid code");
     }
+  }
 
-    public TokenResponse refreshToken(RefreshTokenRequest request) {
+  public TokenResponse refreshToken(RefreshTokenRequest request) {
 
-        String refreshToken = request.getRefreshToken();
-        String refreshTokenJti = jwtTokenUtils.getJtiFromToken(refreshToken);
-        if (commonService.isTokenExist("invalid-refresh-token:" + refreshTokenJti)) {
-            throw new RuntimeException("Invalid refresh token");
-        }
-        String email = jwtTokenUtils.getSubFromToken(refreshToken);
-        UserEntity user = userRepositoryImpl.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        String newAccessToken = jwtTokenUtils.generateToken(user);
-
-        String newRefreshToken = jwtTokenUtils.generaRefreshToken(user);
-
-        commonService.storeToken("invalid-refresh-token:" + refreshTokenJti, refreshToken, 7 * 24 * 60 * 60); // 7 ngày
-
-        commonService.storeToken("valid-refresh-token:" + jwtTokenUtils.getJtiFromToken(newRefreshToken), newRefreshToken, 7 * 24 * 60 * 60); // 7 ngày
-
-        commonService.storeToken("valid-access-token:" + jwtTokenUtils.getJtiFromToken(newAccessToken), newAccessToken, 60 * 60); // 1 giờ
-
-        return TokenResponse.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .build();
+    String refreshToken = request.getRefreshToken();
+    String refreshTokenJti = jwtTokenUtils.getJtiFromToken(refreshToken);
+    if (commonService.isTokenExist("invalid-refresh-token:" + refreshTokenJti)) {
+      throw new RuntimeException("Invalid refresh token");
     }
+    String email = jwtTokenUtils.getSubFromToken(refreshToken);
+    UserEntity user = userRepositoryImpl.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+    String newAccessToken = jwtTokenUtils.generateToken(user);
 
-    public UserResponse getUserById(String userId) {
-        UserEntity user = userRepositoryImpl.findById(userId).orElseThrow(() -> new RuntimeException("Cant find user"));
-        RoleUserEntity roleUser = roleUserRepositoryImpl.findByUserId(user.getId());
-        RoleEntity role = roleRepository.findById(roleUser.getRoleId()).orElseThrow(() -> new RuntimeException("Cant find roleName"));
-        String roleName = role.getCode();
-        List<Long> permissionId = rolePermissionRepository.findAllByRoleId(role.getId()).stream().map(RolePermissionEntity::getPermissionId).toList();
-        List<String> description = permissionRepository.findAllById(permissionId).stream().map(PermissionEntity::getScope).toList();
-        return UserResponse.builder()
-                .userName(user.getUsername())
-                .email(user.getEmail())
-                .address(user.getAddress())
-                .dateOfBirth(user.getDateOfBirth())
-                .roleName(roleName)
-                .perDescription(description)
-                .build();
-    }
+    String newRefreshToken = jwtTokenUtils.generaRefreshToken(user);
+
+    commonService.storeToken("invalid-refresh-token:" + refreshTokenJti, refreshToken,
+        7 * 24 * 60 * 60); // 7 ngày
+
+    commonService.storeToken(
+        "valid-refresh-token:" + jwtTokenUtils.getJtiFromToken(newRefreshToken), newRefreshToken,
+        7 * 24 * 60 * 60); // 7 ngày
+
+    commonService.storeToken("valid-access-token:" + jwtTokenUtils.getJtiFromToken(newAccessToken),
+        newAccessToken, 60 * 60); // 1 giờ
+
+    return TokenResponse.builder()
+        .accessToken(newAccessToken)
+        .refreshToken(newRefreshToken)
+        .build();
+  }
+
+  public UserResponse getUserById(String userId) {
+    UserEntity user = userRepositoryImpl.findById(userId)
+        .orElseThrow(() -> new RuntimeException("Cant find user"));
+    RoleUserEntity roleUser = roleUserRepositoryImpl.findByUserId(user.getId());
+    RoleEntity role = roleRepository.findById(roleUser.getRoleId())
+        .orElseThrow(() -> new RuntimeException("Cant find roleName"));
+    String roleName = role.getCode();
+    List<Long> permissionId = rolePermissionRepository.findAllByRoleId(role.getId()).stream()
+        .map(RolePermissionEntity::getPermissionId).toList();
+    List<String> description = permissionRepository.findAllById(permissionId).stream()
+        .map(PermissionEntity::getScope).toList();
+    return UserResponse.builder()
+        .userName(user.getUsername())
+        .email(user.getEmail())
+        .address(user.getAddress())
+        .dateOfBirth(user.getDateOfBirth())
+        .roleName(roleName)
+        .perDescription(description)
+        .build();
+  }
 
 //    public UserResponse updateUserInfo(String userId, UpdateInforRequest updateInforRequestDTO) throws UserNotFoundException,
 //            UserExistedException {
@@ -239,142 +250,152 @@ public class DefaultUserService {
 //                .build();
 //    }
 
-    @PostAuthorize("returnObject.email == authentication.name")
-    public ChangePasswordResponse changePassword(String userId, ChangePasswordRequest changePasswordRequest) throws InvalidPasswordException {
-        UserEntity user = userRepositoryImpl.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
-            throw new InvalidPasswordException("Password not match");
-        }
-        user.setPassWord(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+  @PostAuthorize("returnObject.email == authentication.name")
+  public ChangePasswordResponse changePassword(String userId,
+      ChangePasswordRequest changePasswordRequest) throws InvalidPasswordException {
+    UserEntity user = userRepositoryImpl.findById(userId)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+      throw new InvalidPasswordException("Password not match");
+    }
+    user.setPassWord(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
 //        userRepositoryImpl.save(user);
-        logService.saveLog(UserActivityLogEntity.builder()
-                .action(LogInfor.CHANGEPASSWORD.getDescription())
-                .browserId(request.getRemoteAddr())
-                .userId(user.getId())
-                .timestamp(LocalDateTime.now())
-                .build());
-        return ChangePasswordResponse.builder().email(user.getEmail()).build();
-    }
+    logService.saveLog(UserActivityLogEntity.builder()
+        .action(LogInfor.CHANGEPASSWORD.getDescription())
+        .browserId(request.getRemoteAddr())
+        .userId(user.getId())
+        .timestamp(LocalDateTime.now())
+        .build());
+    return ChangePasswordResponse.builder().email(user.getEmail()).build();
+  }
 
-    public String forgotPasswordRequest(String email) {
-        UserEntity user = userRepositoryImpl.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Not found user"));
-        String token = jwtTokenUtils.generateToken(user);
-        emailService.sendPasswordResetToken(email, token);
-        return "Open gmail and check for our email to reset your password";
-    }
+  public String forgotPasswordRequest(String email) {
+    UserEntity user = userRepositoryImpl.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("Not found user"));
+    String token = jwtTokenUtils.generateToken(user);
+    emailService.sendPasswordResetToken(email, token);
+    return "Open gmail and check for our email to reset your password";
+  }
 
-    public String resetPasswordByToken(RetakePasswordByTokenRequest retakePasswordByTokenDTO) {
-        String email = jwtTokenUtils.getSubFromToken(retakePasswordByTokenDTO.getToken());
-        UserEntity user = userRepositoryImpl.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Not found user"));
-        user.setPassWord(passwordEncoder.encode(retakePasswordByTokenDTO.getNewPassword()));
+  public String resetPasswordByToken(RetakePasswordByTokenRequest retakePasswordByTokenDTO) {
+    String email = jwtTokenUtils.getSubFromToken(retakePasswordByTokenDTO.getToken());
+    UserEntity user = userRepositoryImpl.findByEmail(email)
+        .orElseThrow(() -> new UsernameNotFoundException("Not found user"));
+    user.setPassWord(passwordEncoder.encode(retakePasswordByTokenDTO.getNewPassword()));
 //        userRepositoryImpl.save(user);
-        logService.saveLog(UserActivityLogEntity.builder()
-                .action(LogInfor.RESETPASSWORD.getDescription())
-                .browserId(request.getRemoteAddr())
-                .userId(user.getId())
-                .timestamp(LocalDateTime.now())
-                .build());
-        return "Change password successfully";
-    }
+    logService.saveLog(UserActivityLogEntity.builder()
+        .action(LogInfor.RESETPASSWORD.getDescription())
+        .browserId(request.getRemoteAddr())
+        .userId(user.getId())
+        .timestamp(LocalDateTime.now())
+        .build());
+    return "Change password successfully";
+  }
 
-    public String logout(String accessToken, String refreshToken) {
-        if (accessToken.startsWith("Bearer ")) {
-            accessToken = accessToken.substring(7).trim();
-        }
+  public String logout(String accessToken, String refreshToken) {
+    if (accessToken.startsWith("Bearer ")) {
+      accessToken = accessToken.substring(7).trim();
+    }
 //        InvalidToken invalidToken = InvalidToken.builder()
 //                .id(jwtTokenUtils.getJtiFromToken(accessToken))
 //                .expiryTime(jwtTokenUtils.getExpirationTimeFromToken(accessToken))
 //                .refreshTokenId(jwtTokenUtils.getJtiFromToken(refreshToken))
 //                .build();
 //        invalidTokenRepository.save(invalidToken);
-        String accessTokenJti = jwtTokenUtils.getJtiFromToken(accessToken);
-        String accessTokenExp = jwtTokenUtils.getExpirationTimeFromToken(accessToken).toString();
-        String refreshTokenJti = jwtTokenUtils.getJtiFromToken(refreshToken);
-        String refreshTokenExp = jwtTokenUtils.getExpirationTimeFromToken(refreshToken).toString();
+    String accessTokenJti = jwtTokenUtils.getJtiFromToken(accessToken);
+    String accessTokenExp = jwtTokenUtils.getExpirationTimeFromToken(accessToken).toString();
+    String refreshTokenJti = jwtTokenUtils.getJtiFromToken(refreshToken);
+    String refreshTokenExp = jwtTokenUtils.getExpirationTimeFromToken(refreshToken).toString();
 
-        commonService.storeToken("invalid-access-token:" + accessTokenJti, accessTokenExp, 60 * 60);
-        commonService.storeToken("invalid-refresh-token:" + refreshTokenJti, refreshTokenExp, 7 * 24 * 60 * 60);
-        return "logout success";
-    }
+    commonService.storeToken("invalid-access-token:" + accessTokenJti, accessTokenExp, 60 * 60);
+    commonService.storeToken("invalid-refresh-token:" + refreshTokenJti, refreshTokenExp,
+        7 * 24 * 60 * 60);
+    return "logout success";
+  }
 
-    @Transactional
-    public String deletedSoft(String userId, SoftDeleteRequest request) {
-        UserEntity user = userRepositoryImpl.findById(userId).orElseThrow(() -> new RuntimeException("Not find user"));
-        boolean status = request.isStatus();
-        user.setDeleted(status);
+  @Transactional
+  public String deletedSoft(String userId, SoftDeleteRequest request) {
+    UserEntity user = userRepositoryImpl.findById(userId)
+        .orElseThrow(() -> new RuntimeException("Not find user"));
+    boolean status = request.isStatus();
+    user.setDeleted(status);
 //        userRepositoryImpl.save(user);
-        return "User updated";
-    }
+    return "User updated";
+  }
 
-    public String enableUser(String userId, EnableUserRequest request) {
-        UserEntity user = userRepositoryImpl.findById(userId).orElseThrow(() -> new RuntimeException("Not find user"));
-        boolean enabled = request.isEnabled();
-        user.setEnabled(enabled);
+  public String enableUser(String userId, EnableUserRequest request) {
+    UserEntity user = userRepositoryImpl.findById(userId)
+        .orElseThrow(() -> new RuntimeException("Not find user"));
+    boolean enabled = request.isEnabled();
+    user.setEnabled(enabled);
 //        userRepositoryImpl.save(user);
-        return "User updated";
-    }
+    return "User updated";
+  }
 
-    public String resetPassword(String userId, ResetPasswordRequest request) {
-        UserEntity user = userRepositoryImpl.findByKeyclUserId(userId);
-        user.setPassWord(passwordEncoder.encode(request.getNewPassword()));
+  public String resetPassword(String userId, ResetPasswordRequest request) {
+    UserEntity user = userRepositoryImpl.findByKeyclUserId(userId);
+    user.setPassWord(passwordEncoder.encode(request.getNewPassword()));
 //        userRepositoryImpl.save(user);
-        return "Reset password successfully";
-    }
+    return "Reset password successfully";
+  }
 
-    public UserResponse getUserInfor(String token) {
-        if (token.startsWith("Bearer")) {
-            token = token.substring(7).trim();
-        }
-        UserEntity user = userRepositoryImpl.findByEmail(jwtTokenUtils.getSubFromToken(token)).get();
-        RoleUserEntity roleUser = roleUserRepository.findByUserId(user.getId());
-        RoleEntity role = roleRepository.findById(roleUser.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-        List<String> descriptions = rolePermissionRepository.findAllByRoleId(role.getId()).stream()
-                .map(RolePermissionEntity::getPermissionId)
-                .map(permissionId -> permissionRepositoryImpl.findById(permissionId)
-                        .map(PermissionEntity::getScope)
-                        .orElse("Unknown Permission"))
-                .toList();
-        return UserResponse.builder()
-                .userName(user.getUsername())
-                .email(user.getEmail())
-                .address(user.getAddress())
-                .dateOfBirth(user.getDateOfBirth())
-                .roleName(role.getCode())
-                .perDescription(descriptions)
-                .build();
+  public UserResponse getUserInfor(String token) {
+    if (token.startsWith("Bearer")) {
+      token = token.substring(7).trim();
     }
+    UserEntity user = userRepositoryImpl.findByEmail(jwtTokenUtils.getSubFromToken(token)).get();
+    RoleUserEntity roleUser = roleUserRepository.findByUserId(user.getId());
+    RoleEntity role = roleRepository.findById(roleUser.getRoleId())
+        .orElseThrow(() -> new RuntimeException("Role not found"));
+    List<String> descriptions = rolePermissionRepository.findAllByRoleId(role.getId()).stream()
+        .map(RolePermissionEntity::getPermissionId)
+        .map(permissionId -> permissionRepositoryImpl.findById(permissionId)
+            .map(PermissionEntity::getScope)
+            .orElse("Unknown Permission"))
+        .toList();
+    return UserResponse.builder()
+        .userName(user.getUsername())
+        .email(user.getEmail())
+        .address(user.getAddress())
+        .dateOfBirth(user.getDateOfBirth())
+        .roleName(role.getCode())
+        .perDescription(descriptions)
+        .build();
+  }
 
-    public UsersResponse<UserResponse> getUsers(SearchRequest request) {
-        Sort.Order order = new Sort.Order(Sort.Direction.ASC, request.getAttribute());//
+  public UsersResponse<UserResponse> getUsers(SearchRequest request) {
+    Sort.Order order = new Sort.Order(Sort.Direction.ASC, request.getAttribute());//
 
-        if ("desc".equalsIgnoreCase(request.getSort())) {
-            order = new Sort.Order(Sort.Direction.DESC, request.getAttribute());
-        }
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(order));
-        Page<UserEntity> userPage = (request.getKeyword() == null || request.getKeyword().isBlank()) ? userRepository
-                .findAll(sortedPageable) :
-                userRepository.findByKeyWord(request.getKeyword().trim(), sortedPageable);
-        List<UserResponse> userResponseDTOList = userPage.getContent().stream().map(user -> UserResponse.builder()
-                .userName(user.getUsername())
-                .email(user.getEmail())
-                .address(user.getAddress())
-                .dateOfBirth(user.getDateOfBirth())
-                .build()).toList();
-        return new UsersResponse<>(userResponseDTOList, userPage.getTotalPages());
+    if ("desc".equalsIgnoreCase(request.getSort())) {
+      order = new Sort.Order(Sort.Direction.DESC, request.getAttribute());
     }
+    Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+    Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+        Sort.by(order));
+    Page<UserEntity> userPage =
+        (request.getKeyword() == null || request.getKeyword().isBlank()) ? userRepository
+            .findAll(sortedPageable) :
+            userRepository.findByKeyWord(request.getKeyword().trim(), sortedPageable);
+    List<UserResponse> userResponseDTOList = userPage.getContent().stream()
+        .map(user -> UserResponse.builder()
+            .userName(user.getUsername())
+            .email(user.getEmail())
+            .address(user.getAddress())
+            .dateOfBirth(user.getDateOfBirth())
+            .build()).toList();
+    return new UsersResponse<>(userResponseDTOList, userPage.getTotalPages());
+  }
 
-    public UsersResponse<UserResponse> getUsers(UserSearchRequest request) {
-        List<UserEntity> users = userRepositoryCustomImpl.searchUser(request);
-        List<UserResponse> userResponseList = users.stream().map(user -> UserResponse.builder()
-                .userName(user.getUsername())
-                .email(user.getEmail())
-                .address(user.getAddress())
-                .dateOfBirth(user.getDateOfBirth())
-                .build()).toList();
-        return new UsersResponse<>(userResponseList, request.getPage());
-    }
+  public UsersResponse<UserResponse> getUsers(UserSearchRequest request) {
+    List<UserEntity> users = userRepositoryCustomImpl.searchUser(request);
+    List<UserResponse> userResponseList = users.stream().map(user -> UserResponse.builder()
+        .userName(user.getUsername())
+        .email(user.getEmail())
+        .address(user.getAddress())
+        .dateOfBirth(user.getDateOfBirth())
+        .build()).toList();
+    return new UsersResponse<>(userResponseList, request.getPage());
+  }
 }
 
 

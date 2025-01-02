@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserProfileSearchRequest extends SearchRequest {
-    private String userName;
-    private String province;
+
+  private String userName;
+  private String province;
 }

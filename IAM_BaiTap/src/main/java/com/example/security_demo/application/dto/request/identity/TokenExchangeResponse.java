@@ -14,10 +14,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TokenExchangeResponse {
-    private String accessToken;
-    private String expiresIn;
-    private String refreshExpiresIn;
-    private String tokenType;
-    private String idToken;
-    private String scope;
+
+  private String accessToken;
+  private String expiresIn;
+  private String refreshExpiresIn;
+  private String tokenType;
+  private String idToken;
+  private String scope;
 }

@@ -14,10 +14,11 @@ import java.util.List;
 @Slf4j
 @Component
 public class UserResponse {
-    private String userName;
-    private String email;
-    private String address;
-    private String roleName;
-    private LocalDate dateOfBirth;
-    private List<String> perDescription;
+
+  private String userName;
+  private String email;
+  private String address;
+  private String roleName;
+  private LocalDate dateOfBirth;
+  private List<String> perDescription;
 }

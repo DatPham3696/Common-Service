@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/file/public")
 @RequiredArgsConstructor
 public class testController {
-    private final IamClient iamClient;
-    @GetMapping("/test/{email}")
-    ResponseEntity<?> getAu(@PathVariable("email") String email){
-        return ResponseEntity.ok(iamClient.getUserAuthority(email));
-    }
+
+  private final IamClient iamClient;
+
+  @GetMapping("/test/{email}")
+  ResponseEntity<?> getAu(@PathVariable("email") String email) {
+    return ResponseEntity.ok(iamClient.getUserAuthority(email));
+  }
 
 }

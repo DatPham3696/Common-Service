@@ -1,4 +1,5 @@
 package com.example.security_demo.application.dto.request.identity;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class UserCreationParam {
-    private String username;
-    private boolean enabled;
-    private String email;
-    private boolean emailVerified;
-    private String firstName;
-    private String lastName;
-    List<Credential> credentials;
+
+  private String username;
+  private boolean enabled;
+  private String email;
+  private boolean emailVerified;
+  private String firstName;
+  private String lastName;
+  List<Credential> credentials;
 }

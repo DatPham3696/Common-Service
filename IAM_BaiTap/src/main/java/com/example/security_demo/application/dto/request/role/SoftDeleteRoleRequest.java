@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SoftDeleteRoleRequest {
-    private boolean status;
+
+  private boolean status;
 }

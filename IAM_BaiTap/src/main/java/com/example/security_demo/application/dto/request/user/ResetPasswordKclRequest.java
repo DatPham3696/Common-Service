@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResetPasswordKclRequest {
-    private String type;
-    private String value;
-    private boolean temporary;
+
+  private String type;
+  private String value;
+  private boolean temporary;
 }

@@ -8,7 +8,10 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface UserCommandMapper {
-    RegisterRequest from(RegisterCmd cmd);
-    RegisterCmd fromRegisterDto(RegisterRequest registerDTO);
-    UpdateInforCmd fromUpdateInforDto(UpdateInforRequest updateInforDTO);
+
+  RegisterRequest from(RegisterCmd cmd);
+
+  RegisterCmd fromRegisterDto(RegisterRequest registerDTO);
+
+  UpdateInforCmd fromUpdateInforDto(UpdateInforRequest updateInforDTO);
 }

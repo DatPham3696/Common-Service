@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UsersResponse<T> {
-    private List<?> content;
-    private int totalPage;
+
+  private List<?> content;
+  private int totalPage;
 }

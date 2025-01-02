@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PermissionsResponse<T> {
-    private List<?> content;
-    private int totalPage;
+
+  private List<?> content;
+  private int totalPage;
 }

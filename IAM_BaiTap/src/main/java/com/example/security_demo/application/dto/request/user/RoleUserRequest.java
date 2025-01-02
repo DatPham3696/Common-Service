@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class RoleUserRequest {
-    private String userId;
-    private List<Long> roleIds;
+
+  private String userId;
+  private List<Long> roleIds;
 }

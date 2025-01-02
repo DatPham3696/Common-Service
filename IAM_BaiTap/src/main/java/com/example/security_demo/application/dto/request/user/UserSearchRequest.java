@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserSearchRequest extends SearchRequest {
-    private String userName;
-    @Email(message = "Invalid email format")
-    private String email;
+
+  private String userName;
+  @Email(message = "Invalid email format")
+  private String email;
 }

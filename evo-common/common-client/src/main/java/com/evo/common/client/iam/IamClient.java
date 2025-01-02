@@ -14,18 +14,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.UUID;
 
 @FeignClient(
-        name = "security-demo",
-        url = "http://localhost:8090",
-        configuration = FeignClientConfiguration.class
+    name = "security-demo",
+    url = "http://localhost:8090",
+    configuration = FeignClientConfiguration.class
 )
 public interface IamClient {
-    @GetMapping("/api/users/{email}/authorities-by-email")
-    ResponseEntity<UserAuthority> getUserAuthority(@PathVariable("email") String email);
+
+  @GetMapping("/api/users/{email}/authorities-by-email")
+  ResponseEntity<UserAuthority> getUserAuthority(@PathVariable("email") String email);
 
 //    Response<UserAuthority> getUserAuthority(String username);
 
-    @GetMapping("/api/users/verify-client-key")
-    ResponseEntity<?> generateToken(@RequestParam("clientId") String clientId,
-                              @RequestParam("clientSecret") String clientSecret);
+  @GetMapping("/api/users/verify-client-key")
+  ResponseEntity<?> generateToken(@RequestParam("clientId") String clientId,
+      @RequestParam("clientSecret") String clientSecret);
 
 }

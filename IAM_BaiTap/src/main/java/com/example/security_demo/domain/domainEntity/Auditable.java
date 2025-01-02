@@ -22,17 +22,18 @@ import java.time.Instant;
 @RequiredArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auditable implements Serializable {
-    private static final long serialVersionUID = 1L;
 
-    @CreatedBy
-    protected String createdBy;
+  private static final long serialVersionUID = 1L;
 
-    @CreatedDate
-    protected Instant createdAt = Instant.now();
+  @CreatedBy
+  protected String createdBy;
 
-    @LastModifiedBy
-    protected String lastModifiedBy;
+  @CreatedDate
+  protected Instant createdAt = Instant.now();
 
-    @LastModifiedDate
-    protected Instant lastModifiedAt = Instant.now();
+  @LastModifiedBy
+  protected String lastModifiedBy;
+
+  @LastModifiedDate
+  protected Instant lastModifiedAt = Instant.now();
 }

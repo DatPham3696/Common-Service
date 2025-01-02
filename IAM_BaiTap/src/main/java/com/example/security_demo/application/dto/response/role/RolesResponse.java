@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RolesResponse<T> {
-    private List<?> content;
-    private int totalPage;
+
+  private List<?> content;
+  private int totalPage;
 }

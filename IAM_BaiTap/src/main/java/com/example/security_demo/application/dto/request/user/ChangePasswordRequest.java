@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangePasswordRequest {
-    private String oldPassword;
-    @Size(min = 6, message = "Password must be at least 6 characters")
-    private String newPassword;
+
+  private String oldPassword;
+  @Size(min = 6, message = "Password must be at least 6 characters")
+  private String newPassword;
 }

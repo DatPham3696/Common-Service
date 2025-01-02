@@ -10,11 +10,12 @@ import java.util.Optional;
 
 @Service
 public class CredentialService {
-    public String getCredentialInfor(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication.getName().isBlank()){
-            return "Anonymous user";
-        }
-        return authentication.getName();
+
+  public String getCredentialInfor() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication.getName().isBlank()) {
+      return "Anonymous user";
     }
+    return authentication.getName();
+  }
 }

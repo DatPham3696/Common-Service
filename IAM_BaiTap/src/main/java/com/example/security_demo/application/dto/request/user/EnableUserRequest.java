@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class EnableUserRequest {
-    private boolean enabled;
+
+  private boolean enabled;
 }

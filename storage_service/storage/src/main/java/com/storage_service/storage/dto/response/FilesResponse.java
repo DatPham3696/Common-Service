@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @Builder
 public class FilesResponse<T> {
-    private List<?> content;
-    private long totalPage;
+
+  private List<?> content;
+  private long totalPage;
 }

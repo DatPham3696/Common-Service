@@ -14,11 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoleUser {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    private Long roleId;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String userId;
+  private Long roleId;
 
+  private String userId;
+
+  private boolean deleted;
 }

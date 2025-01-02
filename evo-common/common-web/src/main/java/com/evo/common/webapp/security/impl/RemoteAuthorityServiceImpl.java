@@ -12,20 +12,21 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class RemoteAuthorityServiceImpl implements AuthorityService {
-    private final IamClient iamClient;
 
-    public RemoteAuthorityServiceImpl(IamClient iamClient) {
-        this.iamClient = iamClient;
-    }
+  private final IamClient iamClient;
 
-    @Override
-    public UserAuthority getUserAuthority(String email) {
+  public RemoteAuthorityServiceImpl(IamClient iamClient) {
+    this.iamClient = iamClient;
+  }
+
+  @Override
+  public UserAuthority getUserAuthority(String email) {
 //        log.info(iamClient.getUserAuthority(email).getData().toString());
-        return iamClient.getUserAuthority(email).getBody();
-    }
+    return iamClient.getUserAuthority(email).getBody();
+  }
 
-    @Override
-    public UserAuthority getClientAuthority(UUID clientId) {
-        return null;
-    }
+  @Override
+  public UserAuthority getClientAuthority(UUID clientId) {
+    return null;
+  }
 }

@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequest {
-    @Email(message = "Invalid email format")
-    private String email;
-    @Size(min = 6, message = "Password must be at least 6 characters")
-    private String passWord;
+
+  @Email(message = "Invalid email format")
+  private String email;
+  @Size(min = 6, message = "Password must be at least 6 characters")
+  private String passWord;
 }

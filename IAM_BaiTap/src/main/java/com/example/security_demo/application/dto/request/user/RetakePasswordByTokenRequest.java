@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RetakePasswordByTokenRequest {
-    private String token;
-    @Size(min = 6, message = "Password must be at least 6 characters")
-    private String newPassword;
+
+  private String token;
+  @Size(min = 6, message = "Password must be at least 6 characters")
+  private String newPassword;
 }

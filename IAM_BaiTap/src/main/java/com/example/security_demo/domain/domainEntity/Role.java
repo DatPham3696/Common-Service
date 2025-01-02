@@ -13,19 +13,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Role extends Auditable {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private boolean deleted;
-    private String code;
-    private String description;
-    private String name;
-    private boolean isAdmin;
 
-    public Role(CreateRoleCmd createRoleCommand) {
-        this.deleted = createRoleCommand.isDeleted();
-        this.description = createRoleCommand.getDescription();
-        this.code = createRoleCommand.getCode();
-        this.name = createRoleCommand.getName();
-        this.isAdmin = createRoleCommand.isAdmin();
-    }
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  private boolean deleted;
+  private String code;
+  private String description;
+  private String name;
+  private boolean isAdmin;
+
+  public Role(CreateRoleCmd createRoleCommand) {
+    this.deleted = createRoleCommand.isDeleted();
+    this.description = createRoleCommand.getDescription();
+    this.code = createRoleCommand.getCode();
+    this.name = createRoleCommand.getName();
+    this.isAdmin = createRoleCommand.isAdmin();
+  }
 }

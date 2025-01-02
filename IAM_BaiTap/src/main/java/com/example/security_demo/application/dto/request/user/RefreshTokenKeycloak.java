@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RefreshTokenKeycloak {
-    private String grant_type;
-    private String client_id;
-    private String client_secret;
-    private String refresh_token;
+
+  private String grant_type;
+  private String client_id;
+  private String client_secret;
+  private String refresh_token;
 }

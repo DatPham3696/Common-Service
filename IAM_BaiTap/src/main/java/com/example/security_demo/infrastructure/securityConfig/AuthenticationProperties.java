@@ -6,7 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "spring.security.authentication.jwt")
 public class AuthenticationProperties {
-    private String keyStore;
-    private String keyStorePassword;
-    private String keyAlias;
+
+  private String keyStore;
+  private String keyStorePassword;
+  private String keyAlias;
 }

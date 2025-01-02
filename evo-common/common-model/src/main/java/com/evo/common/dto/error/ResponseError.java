@@ -1,13 +1,14 @@
 package com.evo.common.dto.error;
 
 public interface ResponseError {
-    String getName();
 
-    String getMessage();
+  String getName();
 
-    int getStatus();
+  String getMessage();
 
-    default Integer getCode() {
-        return 0;
-    }
+  int getStatus();
+
+  default Integer getCode() {
+    return 0;
+  }
 }

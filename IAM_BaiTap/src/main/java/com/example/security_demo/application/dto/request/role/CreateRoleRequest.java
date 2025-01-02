@@ -12,13 +12,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @AllArgsConstructor
 @Builder
 public class CreateRoleRequest {
-    private boolean deleted;
 
-    private String code;
+  private boolean deleted;
 
-    private String description;
+  private String code;
 
-    private String name;
+  private String description;
 
-    private boolean isAdmin;
+  private String name;
+
+  private boolean isAdmin;
 }

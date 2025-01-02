@@ -6,8 +6,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 
 public class FileUtils {
-    public static MultipartFile convertToMultipartFile(ByteArrayInputStream stream, String filename) throws IOException {
-        byte[] content = stream.readAllBytes();
-        return new CustomMultipartFile(content, filename);
-    }
+
+  public static MultipartFile convertToMultipartFile(ByteArrayInputStream stream, String filename)
+      throws IOException {
+    byte[] content = stream.readAllBytes();
+    return new CustomMultipartFile(content, filename);
+  }
 }

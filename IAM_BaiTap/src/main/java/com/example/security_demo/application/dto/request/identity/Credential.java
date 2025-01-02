@@ -11,7 +11,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 public class Credential {
-    private String type;
-    private String value;
-    private boolean temporary;
+
+  private String type;
+  private String value;
+  private boolean temporary;
 }

@@ -22,26 +22,32 @@ import java.util.UUID;
 @Data
 @Slf4j
 public class TokenProvider implements InitializingBean {
-    private final AuthenticationProperties properties;
-    private KeyPair keyPair;
-    public TokenProvider(AuthenticationProperties properties){
-        this.properties = properties;
-    }
-    private KeyPair keyPair(String keyStore, String password, String alias){
-        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(new ClassPathResource(keyStore), password.toCharArray());
-        return keyStoreKeyFactory.getKeyPair(alias);
-    }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        this.keyPair = keyPair(properties.getKeyStore(),
-                properties.getKeyStorePassword(),
-                properties.getKeyAlias());
-    }
-    public JWKSet jwkSet() {
-        RSAKey.Builder builder = new RSAKey.Builder((RSAPublicKey) this.keyPair.getPublic()).keyUse(KeyUse.SIGNATURE)
-                .algorithm(JWSAlgorithm.RS256)
-                .keyID(UUID.randomUUID().toString());
-        return new JWKSet(builder.build());
-    }
+  private final AuthenticationProperties properties;
+  private KeyPair keyPair;
+
+  public TokenProvider(AuthenticationProperties properties) {
+    this.properties = properties;
+  }
+
+  private KeyPair keyPair(String keyStore, String password, String alias) {
+    KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(new ClassPathResource(keyStore),
+        password.toCharArray());
+    return keyStoreKeyFactory.getKeyPair(alias);
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    this.keyPair = keyPair(properties.getKeyStore(),
+        properties.getKeyStorePassword(),
+        properties.getKeyAlias());
+  }
+
+  public JWKSet jwkSet() {
+    RSAKey.Builder builder = new RSAKey.Builder((RSAPublicKey) this.keyPair.getPublic()).keyUse(
+            KeyUse.SIGNATURE)
+        .algorithm(JWSAlgorithm.RS256)
+        .keyID(UUID.randomUUID().toString());
+    return new JWKSet(builder.build());
+  }
 }

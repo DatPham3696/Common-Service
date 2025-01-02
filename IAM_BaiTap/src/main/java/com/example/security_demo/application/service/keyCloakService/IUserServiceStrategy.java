@@ -8,9 +8,14 @@ import com.example.security_demo.domain.exception.UserExistedException;
 import org.springframework.http.ResponseEntity;
 
 public interface IUserServiceStrategy {
-    ResponseEntity<?> register(RegisterRequest registerDTO)  throws UserExistedException;
-    ResponseEntity<?> refreshToken(RefreshTokenRequest request);
-    ResponseEntity<?> logout(String accessToken, String refreshToken);
-    ResponseEntity<?> enableUser(String accessToken,String userId, EnableUserRequest request);
-    ResponseEntity<?> resetPassword(String accessToken, String userId, ResetPasswordRequest request);
+
+  ResponseEntity<?> register(RegisterRequest registerDTO) throws UserExistedException;
+
+  ResponseEntity<?> refreshToken(RefreshTokenRequest request);
+
+  ResponseEntity<?> logout(String accessToken, String refreshToken);
+
+  ResponseEntity<?> enableUser(String accessToken, String userId, EnableUserRequest request);
+
+  ResponseEntity<?> resetPassword(String accessToken, String userId, ResetPasswordRequest request);
 }

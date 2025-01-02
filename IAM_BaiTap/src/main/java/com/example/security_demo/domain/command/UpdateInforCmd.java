@@ -12,9 +12,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class UpdateInforCmd {
-    private String userName;
-    private String phoneNumber;
-    private String passWord;
-    private String address;
-    private LocalDate dateOfBirth;
+
+  private String userName;
+  private String phoneNumber;
+  private String passWord;
+  private String address;
+  private LocalDate dateOfBirth;
 }

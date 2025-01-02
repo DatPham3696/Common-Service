@@ -8,7 +8,10 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface RoleCommandMapper {
-    CreateRoleRequest fromCmd(CreateRoleCmd createRoleCmd);
-    CreateRoleCmd fromCreateRequest(CreateRoleRequest createRoleRequest);
-    RoleUserCmd fromUpdateRequest(RoleUserRequest request);
+
+  CreateRoleRequest fromCmd(CreateRoleCmd createRoleCmd);
+
+  CreateRoleCmd fromCreateRequest(CreateRoleRequest createRoleRequest);
+
+  RoleUserCmd fromUpdateRequest(RoleUserRequest request);
 }

@@ -7,12 +7,13 @@ import java.util.List;
 
 @Data
 public class RegisterCmd {
-    private String email;
-    private String userName;
-    private String passWord;
-    private String phoneNumber;
-    private String address;
-    private LocalDate dateOfBirth;
-    List<Long> rolesId;
+
+  private String email;
+  private String userName;
+  private String passWord;
+  private String phoneNumber;
+  private String address;
+  private LocalDate dateOfBirth;
+  List<Long> rolesId;
 
 }

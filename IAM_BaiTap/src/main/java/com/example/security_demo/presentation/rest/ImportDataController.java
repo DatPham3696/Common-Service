@@ -13,17 +13,20 @@ import java.io.IOException;
 @RequestMapping("api/import-data")
 @RequiredArgsConstructor
 public class ImportDataController {
-    private final ImportDataService importDataService;
-    @PostMapping("/import")
-    public ResponseEntity<?> importData(@RequestPart("file") MultipartFile file){
-        try{
-            String result = importDataService.importUserFromExcel(file);
-            if(result.contains("errors")){
-                return ResponseEntity.status(HttpStatus.MULTI_STATUS).body(result);
-            }
-            return ResponseEntity.ok().body(result);
-        }catch (IOException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("error:" + e.getMessage());
-        }
+
+  private final ImportDataService importDataService;
+
+  @PostMapping("/import")
+  public ResponseEntity<?> importData(@RequestPart("file") MultipartFile file) {
+    try {
+      String result = importDataService.importUserFromExcel(file);
+      if (result.contains("errors")) {
+        return ResponseEntity.status(HttpStatus.MULTI_STATUS).body(result);
+      }
+      return ResponseEntity.ok().body(result);
+    } catch (IOException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body("error:" + e.getMessage());
     }
+  }
 }
