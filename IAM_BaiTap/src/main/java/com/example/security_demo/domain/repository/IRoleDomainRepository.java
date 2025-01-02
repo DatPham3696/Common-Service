@@ -9,9 +9,5 @@ import java.util.Optional;
 
 public interface IRoleDomainRepository {
 
-  Optional<RoleEntity> findByCode(String code);
-
-  List<RoleEntity> findAll(List<Long> id);
-
-  RoleEntity save(Role role);
+  boolean save(Role role);
 }

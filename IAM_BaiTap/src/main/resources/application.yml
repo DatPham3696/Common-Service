@@ -40,6 +40,9 @@ spring:
   redis:
     host: localhost
     port: 6379
+    expiry-time-invalid-refresh-token: 604800
+    expiry-time-valid-refresh-token: 604800
+    expiry-time-valid-access-token: 3600
   security:
     authentication:
       jwt:

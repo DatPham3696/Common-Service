@@ -22,19 +22,10 @@ public class RoleRepositoryImpl implements IRoleDomainRepository {
   }
 
   @Override
-  public Optional<RoleEntity> findByCode(String code) {
-    return roleRepositoryJpa.findByCode(code);
-  }
-
-  @Override
-  public List<RoleEntity> findAll(List<Long> id) {
-    return roleRepositoryJpa.findAllById(id);
-  }
-
-  @Override
-  public RoleEntity save(Role role) {
+  public boolean save(Role role) {
     RoleEntity roleEntity = mapper.fromRoleDomain(role);
-    return roleRepositoryJpa.save(roleEntity);
+    roleRepositoryJpa.save(roleEntity);
+    return true;
   }
 
 }

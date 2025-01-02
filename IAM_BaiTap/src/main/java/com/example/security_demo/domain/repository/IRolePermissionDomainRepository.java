@@ -5,7 +5,5 @@ import java.util.List;
 
 public interface IRolePermissionDomainRepository {
 
-  List<RolePermissionEntity> findAllByRoleId(Long roleId);
-
   boolean existsByRoleIdAndPermissionId(Long roleId, Long permissionId);
 }

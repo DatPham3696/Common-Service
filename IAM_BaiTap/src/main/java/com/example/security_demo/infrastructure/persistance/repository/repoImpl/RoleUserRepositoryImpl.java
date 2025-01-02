@@ -22,11 +22,6 @@ public class RoleUserRepositoryImpl implements IRoleUserDomainRepository {
     this.roleUserMapper = roleUserMapper;
   }
 
-  @Override
-  public RoleUserEntity findByUserId(String userId) {
-    return roleUserRepositoryJpa.findByUserId(userId);
-  }
-
   //    @Override
 //    public List<RoleUserEntity> findAllByUserId(String userId) {
 //        return roleUserRepositoryJpa.findAllByUserId(userId);

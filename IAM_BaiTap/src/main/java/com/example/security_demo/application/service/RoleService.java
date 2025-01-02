@@ -50,7 +50,4 @@ public class RoleService {
     return new RolesResponse<>(roles.getContent(), roles.getTotalPages());
   }
 
-  public List<Long> listRoleExist(List<Long> id) {
-    return roleRepository.findAll(id).stream().map(RoleEntity::getId).toList();
-  }
 }

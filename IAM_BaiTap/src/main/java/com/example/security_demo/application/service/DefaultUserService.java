@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class DefaultUserService {
 
+  @Value("${spring.redis.expiry-time-invalid-refresh-token}")
+  private int expiryTimeInvalidRefreshToken;
+  @Value("${spring.redis.expiry-time-valid-refresh-token}")
+  private int expiryTimeValidRefreshToken;
+  @Value("${spring.redis.expiry-time-valid-access-token}")
+  private int expiryTimeValidAccessToken;
+
   private final JpaUserRepository userRepository;
   private final JpaRoleRepository roleRepository;
   private final JwtTokenUtils jwtTokenUtils;
@@ -52,22 +60,14 @@ public class DefaultUserService {
   private final JpaRolePermissionRepository rolePermissionRepository;
   private final EmailService emailService;
   private final JpaInvalidTokenRepository invalidTokenRepository;
-  //    private final RedisService redisService;
   private final LogService logService;
   private final JpaRoleUserRepository roleUserRepository;
   private final HttpServletRequest request;
-  private final RefreshTokenService refreshTokenService;
-  private final UserKeycloakService userKeycloakService;
   private final UserCustomRepositoryImpl userRepositoryCustomImpl;
   private final CommonService commonService;
   private final RedisService redisService;
   private final UserRepositoryImpl userRepositoryImpl;
-  private final RoleRepositoryImpl roleRepositoryImpl;
   private final PermissionRepositoryImpl permissionRepositoryImpl;
-  private final RoleUserRepositoryImpl roleUserRepositoryImpl;
-  private final RoleService roleService;
-  private final UserCommandMapper userCommandMapper;
-  private final UserMapper userMapper;
 
 //    public String register(RegisterCommand registerCommand) throws UserExistedException {
 //        if (userRepositoryImpl.existsByEmail(registerCommand.getEmail())) {
@@ -104,7 +104,7 @@ public class DefaultUserService {
 //    }
 
   public boolean confirmRegisterCode(String code) {
-    UserEntity user = userRepositoryImpl.findByVerificationCode(code);
+    UserEntity user = userRepository.findByVerificationCode(code);
     if (user != null && !user.isEmailVerified()) {
       user.setEmailVerified(true);
       userRepository.save(user);
@@ -114,7 +114,7 @@ public class DefaultUserService {
   }
 
   public String login(LoginRequest userDTO) {
-    UserEntity user = userRepositoryImpl.findByEmail(userDTO.getEmail())
+    UserEntity user = userRepository.findByEmail(userDTO.getEmail())
         .orElseThrow(() -> new RuntimeException("Invalid inforr"));
     if (!passwordEncoder.matches(userDTO.getPassWord(), user.getPassword())) {
       throw new RuntimeException("invalid infor");
@@ -131,7 +131,7 @@ public class DefaultUserService {
     String storeCode = redisService.getStringFromRedis(email);
     if (storeCode != null && storeCode.equals(code)) {
       redisService.deleteFromRedis(email);
-      UserEntity user = userRepositoryImpl.findByEmail(email)
+      UserEntity user = userRepository.findByEmail(email)
           .orElseThrow(() -> new RuntimeException("Invalid inforr"));
       Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
           user.getAuthorities());
@@ -164,21 +164,21 @@ public class DefaultUserService {
       throw new RuntimeException("Invalid refresh token");
     }
     String email = jwtTokenUtils.getSubFromToken(refreshToken);
-    UserEntity user = userRepositoryImpl.findByEmail(email)
+    UserEntity user = userRepository.findByEmail(email)
         .orElseThrow(() -> new RuntimeException("User not found"));
     String newAccessToken = jwtTokenUtils.generateToken(user);
 
     String newRefreshToken = jwtTokenUtils.generaRefreshToken(user);
 
     commonService.storeToken("invalid-refresh-token:" + refreshTokenJti, refreshToken,
-        7 * 24 * 60 * 60); // 7 ngày
+        expiryTimeInvalidRefreshToken); // 7 ngày
 
     commonService.storeToken(
         "valid-refresh-token:" + jwtTokenUtils.getJtiFromToken(newRefreshToken), newRefreshToken,
-        7 * 24 * 60 * 60); // 7 ngày
+        expiryTimeValidRefreshToken); // 7 ngày
 
     commonService.storeToken("valid-access-token:" + jwtTokenUtils.getJtiFromToken(newAccessToken),
-        newAccessToken, 60 * 60); // 1 giờ
+        newAccessToken, expiryTimeValidAccessToken); // 1 giờ
 
     return TokenResponse.builder()
         .accessToken(newAccessToken)
@@ -187,9 +187,9 @@ public class DefaultUserService {
   }
 
   public UserResponse getUserById(String userId) {
-    UserEntity user = userRepositoryImpl.findById(userId)
+    UserEntity user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("Cant find user"));
-    RoleUserEntity roleUser = roleUserRepositoryImpl.findByUserId(user.getId());
+    RoleUserEntity roleUser = roleUserRepository.findByUserId(user.getId());
     RoleEntity role = roleRepository.findById(roleUser.getRoleId())
         .orElseThrow(() -> new RuntimeException("Cant find roleName"));
     String roleName = role.getCode();
@@ -252,8 +252,9 @@ public class DefaultUserService {
 
   @PostAuthorize("returnObject.email == authentication.name")
   public ChangePasswordResponse changePassword(String userId,
-      ChangePasswordRequest changePasswordRequest) throws InvalidPasswordException {
-    UserEntity user = userRepositoryImpl.findById(userId)
+      ChangePasswordRequest changePasswordRequest)
+      throws InvalidPasswordException {
+    UserEntity user = userRepository.findById(userId)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
       throw new InvalidPasswordException("Password not match");
@@ -270,7 +271,7 @@ public class DefaultUserService {
   }
 
   public String forgotPasswordRequest(String email) {
-    UserEntity user = userRepositoryImpl.findByEmail(email)
+    UserEntity user = userRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("Not found user"));
     String token = jwtTokenUtils.generateToken(user);
     emailService.sendPasswordResetToken(email, token);
@@ -279,7 +280,7 @@ public class DefaultUserService {
 
   public String resetPasswordByToken(RetakePasswordByTokenRequest retakePasswordByTokenDTO) {
     String email = jwtTokenUtils.getSubFromToken(retakePasswordByTokenDTO.getToken());
-    UserEntity user = userRepositoryImpl.findByEmail(email)
+    UserEntity user = userRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("Not found user"));
     user.setPassWord(passwordEncoder.encode(retakePasswordByTokenDTO.getNewPassword()));
 //        userRepositoryImpl.save(user);
@@ -307,15 +308,16 @@ public class DefaultUserService {
     String refreshTokenJti = jwtTokenUtils.getJtiFromToken(refreshToken);
     String refreshTokenExp = jwtTokenUtils.getExpirationTimeFromToken(refreshToken).toString();
 
-    commonService.storeToken("invalid-access-token:" + accessTokenJti, accessTokenExp, 60 * 60);
+    commonService.storeToken("invalid-access-token:" + accessTokenJti, accessTokenExp,
+        expiryTimeValidAccessToken);
     commonService.storeToken("invalid-refresh-token:" + refreshTokenJti, refreshTokenExp,
-        7 * 24 * 60 * 60);
+        expiryTimeInvalidRefreshToken);
     return "logout success";
   }
 
   @Transactional
   public String deletedSoft(String userId, SoftDeleteRequest request) {
-    UserEntity user = userRepositoryImpl.findById(userId)
+    UserEntity user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("Not find user"));
     boolean status = request.isStatus();
     user.setDeleted(status);
@@ -324,7 +326,7 @@ public class DefaultUserService {
   }
 
   public String enableUser(String userId, EnableUserRequest request) {
-    UserEntity user = userRepositoryImpl.findById(userId)
+    UserEntity user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("Not find user"));
     boolean enabled = request.isEnabled();
     user.setEnabled(enabled);
@@ -333,7 +335,7 @@ public class DefaultUserService {
   }
 
   public String resetPassword(String userId, ResetPasswordRequest request) {
-    UserEntity user = userRepositoryImpl.findByKeyclUserId(userId);
+    UserEntity user = userRepository.findByKeyclUserId(userId);
     user.setPassWord(passwordEncoder.encode(request.getNewPassword()));
 //        userRepositoryImpl.save(user);
     return "Reset password successfully";
@@ -343,7 +345,7 @@ public class DefaultUserService {
     if (token.startsWith("Bearer")) {
       token = token.substring(7).trim();
     }
-    UserEntity user = userRepositoryImpl.findByEmail(jwtTokenUtils.getSubFromToken(token)).get();
+    UserEntity user = userRepository.findByEmail(jwtTokenUtils.getSubFromToken(token)).get();
     RoleUserEntity roleUser = roleUserRepository.findByUserId(user.getId());
     RoleEntity role = roleRepository.findById(roleUser.getRoleId())
         .orElseThrow(() -> new RuntimeException("Role not found"));

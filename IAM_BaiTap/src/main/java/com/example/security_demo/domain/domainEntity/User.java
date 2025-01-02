@@ -61,19 +61,6 @@ public class User extends Auditable {
     this.assignUserRole(List.of(), cmd.getRolesId());
   }
 
-  //    public void assignUserRole(List<Long> roleExits) {
-//        if (roleExits != null && !roleExits.isEmpty()) {
-//            this.roleUser = new ArrayList<>();
-//            roleExits.forEach(roleId -> {
-//                RoleUser roleUser = new RoleUser();
-////                roleUser.setId(15L);
-//                roleUser.setUserId(this.id);
-//                roleUser.setRoleId(roleId);
-//                log.info(this.roleUser.toString());
-//                this.roleUser.add(roleUser);
-//            });
-//        }
-//    }
   public void assignUserRole(List<RoleUser> existingUserRoles, List<Long> newRoleIds) {
     // Lấy danh sách roleId hiện có từ danh sách RoleUser
     List<Long> existingRoleIds = existingUserRoles.stream()
@@ -95,18 +82,16 @@ public class User extends Auditable {
     // Xác định các role cần cập nhật hoặc đánh dấu là xóa
     List<RoleUser> rolesToUpdateOrDelete = existingUserRoles.stream()
         .map(existingRole -> {
-          if (newRoleIds.contains(existingRole.getRoleId())) {
-            // Nếu role tồn tại trong newRoleIds, cập nhật deleted = false
+          if (newRoleIds.contains(
+              existingRole.getRoleId())) { // neu rolecu ton tai trong list role moi -> set role cu la false
             existingRole.setDeleted(false);
-          } else {
-            // Nếu role không tồn tại trong newRoleIds, đánh dấu deleted = true
+          } else { // neu role cu khong ton tai trong list role moi -> set role cu la true
             existingRole.setDeleted(true);
           }
           return existingRole;
         })
         .toList();
 
-    // Kết hợp danh sách rolesToAdd và rolesToUpdateOrDelete
     List<RoleUser> result = new ArrayList<>();
     result.addAll(rolesToAdd);
     result.addAll(rolesToUpdateOrDelete);
@@ -117,9 +102,9 @@ public class User extends Auditable {
 
 
   public void update(UpdateInforCmd updateInforCommand, PasswordEncoder passwordEncoder) {
-      if (updateInforCommand == null) {
-          return;
-      }
+    if (updateInforCommand == null) {
+      return;
+    }
     if (updateInforCommand.getUserName() != null) {
       this.userName = updateInforCommand.getUserName();
     }

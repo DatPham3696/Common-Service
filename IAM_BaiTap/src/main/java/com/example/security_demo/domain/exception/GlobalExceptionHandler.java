@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<String> handleGlobleException(Exception e) {
-    System.err.println("Exception occured:" + e.getMessage());
+    System.err.println("Exception occurred:" + e.getMessage());
     return new ResponseEntity<>("Internal server error: " + e.getMessage(), HttpStatus.BAD_REQUEST);
   }
 

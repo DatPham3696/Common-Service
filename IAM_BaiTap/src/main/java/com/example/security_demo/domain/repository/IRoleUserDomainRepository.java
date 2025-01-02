@@ -7,9 +7,6 @@ import java.util.List;
 
 public interface IRoleUserDomainRepository {
 
-  RoleUserEntity findByUserId(String userId);
-
-  //    List<RoleUserEntity> findAllByUserId(String userId);
   List<RoleUser> findAllByUserId(String userId);
 
   boolean saveAll(List<RoleUser> domain);

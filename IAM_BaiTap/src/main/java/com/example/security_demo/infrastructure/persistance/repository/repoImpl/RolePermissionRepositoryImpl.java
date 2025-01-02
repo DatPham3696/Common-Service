@@ -17,11 +17,6 @@ public class RolePermissionRepositoryImpl implements IRolePermissionDomainReposi
   }
 
   @Override
-  public List<RolePermissionEntity> findAllByRoleId(Long roleId) {
-    return rolePermissionRepositoryJpa.findAllByRoleId(roleId);
-  }
-
-  @Override
   public boolean existsByRoleIdAndPermissionId(Long roleId, Long permissionId) {
     return rolePermissionRepositoryJpa.existsByRoleIdAndPermissionId(roleId, permissionId);
   }
