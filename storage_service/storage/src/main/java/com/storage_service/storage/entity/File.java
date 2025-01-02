@@ -13,23 +13,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
-public class File extends Auditable{
-    @Id
-    @Column(name = "file_id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String fileId;
-    @Column(name = "file_name")
-    private String fileName;
-    @Column(name = "file_type")
-    private String fileType;
-    @Column(name = "file_size")
-    private String fileSize;
-    @Column(name = "file_path")
-    private String filePath;
-    @Column(name = "visibility")
-    private boolean visibility;
-    @Column(name = "version")
-    private String version;
-    @Column(name = "owner")
-    private String owner;
+public class File extends Auditable {
+
+  @Id
+  @Column(name = "file_id")
+  @GeneratedValue(strategy = GenerationType.UUID)
+  private String fileId;
+  @Column(name = "file_name")
+  private String fileName;
+  @Column(name = "file_type")
+  private String fileType;
+  @Column(name = "file_size")
+  private String fileSize;
+  @Column(name = "file_path")
+  private String filePath;
+  @Column(name = "visibility")
+  private boolean visibility;
+  @Column(name = "version")
+  private String version;
+  @Column(name = "owner")
+  private String owner;
 }

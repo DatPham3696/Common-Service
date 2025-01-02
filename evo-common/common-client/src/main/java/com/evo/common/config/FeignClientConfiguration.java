@@ -10,12 +10,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class FeignClientConfiguration {
 
-    @Bean
-    public FeignClientInterceptor requestInterceptor() {
-        return new FeignClientInterceptor();
-    }
-    @Bean
-    public Encoder feignFormEncoder() {
-        return new SpringFormEncoder();
-    }
+  @Bean
+  public FeignClientInterceptor requestInterceptor() {
+    return new FeignClientInterceptor();
+  }
+
+  @Bean
+  public Encoder feignFormEncoder() {
+    return new SpringFormEncoder();
+  }
 }

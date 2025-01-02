@@ -8,14 +8,17 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 
 @Configuration
 public class CommonConfig {
-    @Bean
-    public PermissionEvaluator permissionEvaluator() {
-        return new CustomPermissionEvaluator();
-    }
-    @Bean
-    public MethodSecurityExpressionHandler expressionHandler(PermissionEvaluator permissionEvaluator) {
-        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-        expressionHandler.setPermissionEvaluator(permissionEvaluator);
-        return expressionHandler;
-    }
+
+  @Bean
+  public PermissionEvaluator permissionEvaluator() {
+    return new CustomPermissionEvaluator();
+  }
+
+  @Bean
+  public MethodSecurityExpressionHandler expressionHandler(
+      PermissionEvaluator permissionEvaluator) {
+    DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+    expressionHandler.setPermissionEvaluator(permissionEvaluator);
+    return expressionHandler;
+  }
 }

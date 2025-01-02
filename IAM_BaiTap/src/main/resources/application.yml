@@ -58,6 +58,10 @@ spring:
           jwk-set-uris:
             sso: http://localhost:8080/realms/IAM/protocol/openid-connect/certs
             internal: http://localhost:8090/api/users/certificate/.well-known/jwks.json
+jwt:
+  jwk-set-uris:
+    sso: http://localhost:8080/realms/IAM/protocol/openid-connect/certs
+    internal: http://localhost:8090/api/users/certificate/.well-known/jwks.json
 idp:
   enabled: false
   url: http://localhost:8080
@@ -74,8 +78,15 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
   api-docs:
+    path: /v3/api-docs
     version: openapi_3_0
 logging:
   file:
     path: logs/
     name: logs/application.log
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true

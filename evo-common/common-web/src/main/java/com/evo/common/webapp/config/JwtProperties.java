@@ -12,8 +12,9 @@ import java.util.Map;
 @Data
 @Component
 @ConfigurationProperties(
-        prefix = "spring.security.oauth2.resourceserver.jwt"
+    prefix = "jwt"
 )
 public class JwtProperties extends OAuth2ResourceServerProperties.Jwt {
-    private Map<String, String> jwkSetUris;
+
+  private Map<String, String> jwkSetUris;
 }

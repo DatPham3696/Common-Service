@@ -8,18 +8,18 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TokenCacheServiceImpl implements TokenCacheService {
 
-    @Override
-    public void invalidToken(String token) {
+  @Override
+  public void invalidToken(String token) {
 
-    }
+  }
 
-    @Override
-    public void invalidRefreshToken(String refreshToken) {
+  @Override
+  public void invalidRefreshToken(String refreshToken) {
 
-    }
+  }
 
-    @Override
-    public boolean isExisted(String cacheName, String token) {
-        return true;
-    }
+  @Override
+  public boolean isExisted(String cacheName, String token) {
+    return true;
+  }
 }

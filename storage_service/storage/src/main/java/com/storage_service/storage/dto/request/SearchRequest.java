@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchRequest {
-    private String keyword;
-    private int page = 1;
-    private int size = 3;
-    private String sort;
-    private String attribute;
+
+  private String keyword;
+  private int page = 1;
+  private int size = 3;
+  private String sort;
+  private String attribute;
 }

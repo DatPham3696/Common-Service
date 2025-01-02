@@ -18,16 +18,17 @@ import java.time.temporal.ChronoUnit;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Auditable {
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    protected Instant createdDate = Instant.now().plus(7, ChronoUnit.HOURS);
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    protected Instant lastModifiedDate = Instant.now().plus(7, ChronoUnit.HOURS);
-    @CreatedBy
-    @Column(name = "created_by")
-    protected String createdBy;
-    @LastModifiedBy
-    @Column(name = "last_modified_by")
-    protected String lastModifiedBy;
+
+  @CreatedDate
+  @Column(name = "created_at", updatable = false)
+  protected Instant createdDate = Instant.now().plus(7, ChronoUnit.HOURS);
+  @LastModifiedDate
+  @Column(name = "updated_at")
+  protected Instant lastModifiedDate = Instant.now().plus(7, ChronoUnit.HOURS);
+  @CreatedBy
+  @Column(name = "created_by")
+  protected String createdBy;
+  @LastModifiedBy
+  @Column(name = "last_modified_by")
+  protected String lastModifiedBy;
 }

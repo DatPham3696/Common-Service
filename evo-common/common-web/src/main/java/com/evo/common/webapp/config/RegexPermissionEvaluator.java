@@ -12,24 +12,27 @@ import java.util.regex.Pattern;
 @Slf4j
 @Component
 public class RegexPermissionEvaluator implements PermissionEvaluator {
-    @Override
-    public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
-        String requiredPermission = permission.toString();
-        if (!(authentication instanceof UserAuthentication userAuthentication)) {
-            // @TODO throw exception
-            throw new RuntimeException("NOT_SUPPORTED_AUTHENTICATION");
-        }
 
-        if (userAuthentication.isRoot()) {
-            return true;
-        }
-
-        return userAuthentication.getGrantedPermissions().stream()
-                .anyMatch(p -> Pattern.matches(p, requiredPermission));
+  @Override
+  public boolean hasPermission(Authentication authentication, Object targetDomainObject,
+      Object permission) {
+    String requiredPermission = permission.toString();
+    if (!(authentication instanceof UserAuthentication userAuthentication)) {
+      // @TODO throw exception
+      throw new RuntimeException("NOT_SUPPORTED_AUTHENTICATION");
     }
 
-    @Override
-    public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
-        return hasPermission(authentication, null, permission);
+    if (userAuthentication.isRoot()) {
+      return true;
     }
+
+    return userAuthentication.getGrantedPermissions().stream()
+        .anyMatch(p -> Pattern.matches(p, requiredPermission));
+  }
+
+  @Override
+  public boolean hasPermission(Authentication authentication, Serializable targetId,
+      String targetType, Object permission) {
+    return hasPermission(authentication, null, permission);
+  }
 }

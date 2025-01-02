@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @Configuration
 public class JacksonConfiguration {
 
-    @Bean
-    public SimpleModule localDateSerializer() {
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(LocalDate.class, new CustomLocalDateSerializer());
-        return module;
-    }
+  @Bean
+  public SimpleModule localDateSerializer() {
+    SimpleModule module = new SimpleModule();
+    module.addSerializer(LocalDate.class, new CustomLocalDateSerializer());
+    return module;
+  }
 }

@@ -16,42 +16,45 @@ import java.util.Optional;
 
 
 public class JwkAuthenticationManagerResolver implements
-        AuthenticationManagerResolver<HttpServletRequest> {
+    AuthenticationManagerResolver<HttpServletRequest> {
 
-    private final Map<String, String> issuers;
-    private final Map<String, AuthenticationManager> authenticationManagers = new HashMap<>();
+  private final Map<String, String> issuers;
+  private final Map<String, AuthenticationManager> authenticationManagers = new HashMap<>();
 
-    private final BearerTokenResolver resolver = new DefaultBearerTokenResolver();
+  private final BearerTokenResolver resolver = new DefaultBearerTokenResolver();
 
-    public JwkAuthenticationManagerResolver(JwtProperties jwtProperties) {
-        this.issuers = jwtProperties.getJwkSetUris();
+  public JwkAuthenticationManagerResolver(JwtProperties jwtProperties) {
+    this.issuers = jwtProperties.getJwkSetUris();
+  }
+
+  @Override
+  public AuthenticationManager resolve(HttpServletRequest request) {
+    return this.authenticationManagers.computeIfAbsent(toIssuerId(request), this::fromIssuer);
+  }
+
+  private String toIssuerId(HttpServletRequest request) {
+    String token = this.resolver.resolve(request);
+    try {
+      if ((StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("sub")))
+          ||
+          (StringUtils.hasText(
+              (String) JWTParser.parse(token).getJWTClaimsSet().getClaim("client-id")))) {
+        return "internal";
+      } else if (StringUtils.hasText(
+          (String) JWTParser.parse(token).getJWTClaimsSet().getClaim("preferred_username"))) {
+        return "sso";
+      } else {
+        throw new RuntimeException("INVALID_INPUT");
+      }
+    } catch (Exception e) {
+      throw new IllegalArgumentException(e);
     }
+  }
 
-    @Override
-    public AuthenticationManager resolve(HttpServletRequest request) {
-        return this.authenticationManagers.computeIfAbsent(toIssuerId(request), this::fromIssuer);
-    }
-
-    private String toIssuerId(HttpServletRequest request) {
-        String token = this.resolver.resolve(request);
-        try {
-            if ((StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("sub"))) ||
-                    (StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("client-id")))) {
-                return "internal";
-            } else if (StringUtils.hasText((String) JWTParser.parse(token).getJWTClaimsSet().getClaim("preferred_username"))) {
-                return "sso";
-            } else {
-                throw new RuntimeException("INVALID_INPUT");
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    private AuthenticationManager fromIssuer(String issuerId) {
-        return Optional.ofNullable(this.issuers.get(issuerId))
-                .map(issuer -> NimbusJwtDecoder.withJwkSetUri(issuer).build())
-                    .map(JwtAuthenticationProvider::new)
-                    .orElseThrow(() -> new IllegalArgumentException("unknown issuer"))::authenticate;
-    }
+  private AuthenticationManager fromIssuer(String issuerId) {
+    return Optional.ofNullable(this.issuers.get(issuerId))
+        .map(issuer -> NimbusJwtDecoder.withJwkSetUri(issuer).build())
+        .map(JwtAuthenticationProvider::new)
+        .orElseThrow(() -> new IllegalArgumentException("unknown issuer"))::authenticate;
+  }
 }
