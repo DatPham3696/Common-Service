@@ -7,8 +7,8 @@ import com.example.security_demo.application.dto.request.user.UpdateInforRequest
 import com.example.security_demo.application.mapper.RoleCommandMapper;
 import com.example.security_demo.application.mapper.UserCommandMapper;
 import com.example.security_demo.application.service.RoleService;
-import com.example.security_demo.application.service.UserCommandService;
 import com.example.security_demo.application.service.UserKeycloakService;
+import com.example.security_demo.application.service.custom.UserCommandService;
 import com.example.security_demo.domain.command.RegisterCmd;
 import com.example.security_demo.domain.command.RoleUserCmd;
 import com.example.security_demo.domain.command.UpdateInforCmd;
@@ -18,12 +18,11 @@ import com.example.security_demo.domain.exception.UserExistedException;
 import com.example.security_demo.domain.repository.IRoleUserDomainRepository;
 import com.example.security_demo.domain.repository.IUserDomainRepository;
 import com.example.security_demo.infrastructure.persistance.repository.repoImpl.UserRepositoryImpl;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -48,7 +47,6 @@ public class UserCommandImpl implements UserCommandService {
     if (registerCommand.getRolesId() == null) {
       throw new RuntimeException("Role not found " + registerCommand.getRolesId());
     }
-//        List<Long> roleExists = roleService.listRoleExist(registerCommand.getRolesId());
     String verificationCode = UUID.randomUUID().toString().substring(0, 6);
     User userDomain = new User(registerCommand,
         passwordEncoder,
@@ -89,5 +87,6 @@ public class UserCommandImpl implements UserCommandService {
     userRepository.save(user);
     return "update user role success";
   }
-  
+
+
 }

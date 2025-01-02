@@ -8,4 +8,6 @@ import org.mapstruct.Mapper;
 public interface RoleMapper {
 
   RoleEntity fromRoleDomain(Role role);
+
+  Role fromRoleEntity(RoleEntity roleEntity);
 }

@@ -18,9 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleService {
 
-  private final JpaUserRepository userRepository;
   private final JpaRoleRepository roleRepositoryJpa;
-  private final IRoleDomainRepository roleRepository;
 
   public RoleEntity addRole(RoleEntity role) {
     if (roleRepositoryJpa.findByCode(role.getCode()).isPresent()) {

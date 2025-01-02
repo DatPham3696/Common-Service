@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleUser extends Auditable {
+public class RolePermission extends Auditable {
 
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   private Long roleId;
 
-  private String userId;
+  private Long permissionId;
 
   private boolean deleted;
 }

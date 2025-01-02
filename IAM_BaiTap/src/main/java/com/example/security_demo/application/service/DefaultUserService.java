@@ -6,16 +6,11 @@ import com.example.security_demo.application.config.JwtTokenUtils;
 import com.example.security_demo.application.dto.request.Page.SearchRequest;
 import com.example.security_demo.application.dto.request.user.*;
 import com.example.security_demo.application.dto.response.user.*;
-import com.example.security_demo.application.mapper.UserCommandMapper;
-import com.example.security_demo.application.mapper.UserMapper;
 import com.example.security_demo.domain.enums.LogInfor;
 import com.example.security_demo.domain.exception.InvalidPasswordException;
 import com.example.security_demo.infrastructure.persistance.entity.*;
 import com.example.security_demo.infrastructure.persistance.repository.*;
 import com.example.security_demo.infrastructure.persistance.repository.custom.UserCustomRepositoryImpl;
-import com.example.security_demo.infrastructure.persistance.repository.repoImpl.PermissionRepositoryImpl;
-import com.example.security_demo.infrastructure.persistance.repository.repoImpl.RoleRepositoryImpl;
-import com.example.security_demo.infrastructure.persistance.repository.repoImpl.RoleUserRepositoryImpl;
 import com.example.security_demo.infrastructure.persistance.repository.repoImpl.UserRepositoryImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -67,7 +62,6 @@ public class DefaultUserService {
   private final CommonService commonService;
   private final RedisService redisService;
   private final UserRepositoryImpl userRepositoryImpl;
-  private final PermissionRepositoryImpl permissionRepositoryImpl;
 
 //    public String register(RegisterCommand registerCommand) throws UserExistedException {
 //        if (userRepositoryImpl.existsByEmail(registerCommand.getEmail())) {
@@ -144,8 +138,6 @@ public class DefaultUserService {
           .userId(user.getId())
           .timestamp(LocalDateTime.now())
           .build());
-//        refreshTokenService.deleteByUserId(user.getId());
-//        commonService.deleteFromRedis();
       String token = jwtTokenUtils.generateToken(user);
       return JwtResponse.builder()
           .accessToken(token)
@@ -171,14 +163,12 @@ public class DefaultUserService {
     String newRefreshToken = jwtTokenUtils.generaRefreshToken(user);
 
     commonService.storeToken("invalid-refresh-token:" + refreshTokenJti, refreshToken,
-        expiryTimeInvalidRefreshToken); // 7 ngày
-
+        expiryTimeInvalidRefreshToken);
     commonService.storeToken(
         "valid-refresh-token:" + jwtTokenUtils.getJtiFromToken(newRefreshToken), newRefreshToken,
-        expiryTimeValidRefreshToken); // 7 ngày
-
+        expiryTimeValidRefreshToken);
     commonService.storeToken("valid-access-token:" + jwtTokenUtils.getJtiFromToken(newAccessToken),
-        newAccessToken, expiryTimeValidAccessToken); // 1 giờ
+        newAccessToken, expiryTimeValidAccessToken);
 
     return TokenResponse.builder()
         .accessToken(newAccessToken)
@@ -260,7 +250,7 @@ public class DefaultUserService {
       throw new InvalidPasswordException("Password not match");
     }
     user.setPassWord(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
-//        userRepositoryImpl.save(user);
+    userRepository.save(user);
     logService.saveLog(UserActivityLogEntity.builder()
         .action(LogInfor.CHANGEPASSWORD.getDescription())
         .browserId(request.getRemoteAddr())
@@ -351,7 +341,7 @@ public class DefaultUserService {
         .orElseThrow(() -> new RuntimeException("Role not found"));
     List<String> descriptions = rolePermissionRepository.findAllByRoleId(role.getId()).stream()
         .map(RolePermissionEntity::getPermissionId)
-        .map(permissionId -> permissionRepositoryImpl.findById(permissionId)
+        .map(permissionId -> permissionRepository.findById(permissionId)
             .map(PermissionEntity::getScope)
             .orElse("Unknown Permission"))
         .toList();
@@ -374,10 +364,9 @@ public class DefaultUserService {
     Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
     Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
         Sort.by(order));
-    Page<UserEntity> userPage =
-        (request.getKeyword() == null || request.getKeyword().isBlank()) ? userRepository
-            .findAll(sortedPageable) :
-            userRepository.findByKeyWord(request.getKeyword().trim(), sortedPageable);
+    Page<UserEntity> userPage = (request.getKeyword() == null ||
+        request.getKeyword().isBlank()) ? userRepository.findAll(sortedPageable) :
+        userRepository.findByKeyWord(request.getKeyword().trim(), sortedPageable);
     List<UserResponse> userResponseDTOList = userPage.getContent().stream()
         .map(user -> UserResponse.builder()
             .userName(user.getUsername())

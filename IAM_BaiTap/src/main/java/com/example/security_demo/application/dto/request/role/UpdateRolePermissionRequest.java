@@ -1,4 +1,4 @@
-package com.example.security_demo.domain.command;
+package com.example.security_demo.application.dto.request.role;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -10,12 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateRoleCmd {
+public class UpdateRolePermissionRequest {
 
-  private boolean deleted;
-  private String code;
-  private String description;
-  private String name;
-  private boolean isAdmin;
+  private Long roleId;
   private List<Long> permissionIds;
 }

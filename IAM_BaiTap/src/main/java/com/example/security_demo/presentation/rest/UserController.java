@@ -211,6 +211,6 @@ public class UserController {
 
   @PostMapping("update-user-role")
   ResponseEntity<?> updateUserRole(@RequestBody RoleUserRequest roleUserRequest) {
-    return ResponseEntity.ok().body(userCommand.updateRoleUser(roleUserRequest));
+    return ResponseEntity.ok(userCommand.updateRoleUser(roleUserRequest));
   }
 }

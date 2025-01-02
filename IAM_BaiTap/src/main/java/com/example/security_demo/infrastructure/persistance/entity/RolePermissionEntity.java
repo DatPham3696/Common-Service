@@ -25,4 +25,7 @@ public class RolePermissionEntity extends Auditable {
 
   @Column(name = "permission_id")
   private Long permissionId;
+
+  @Column(name = "deleted")
+  private boolean deleted;
 }

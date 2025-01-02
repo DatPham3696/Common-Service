@@ -40,7 +40,7 @@ public class User extends Auditable {
   private Boolean isRoot;
   private List<RoleUser> roleUser = new ArrayList<>();
 
-  public User(RegisterCmd cmd, // veesiet gon lai la registercmd
+  public User(RegisterCmd cmd,
       PasswordEncoder passwordEncoder,
       String verificationCode,
       Supplier<String> userKclId
@@ -62,7 +62,6 @@ public class User extends Auditable {
   }
 
   public void assignUserRole(List<RoleUser> existingUserRoles, List<Long> newRoleIds) {
-    // Lấy danh sách roleId hiện có từ danh sách RoleUser
     List<Long> existingRoleIds = existingUserRoles.stream()
         .map(RoleUser::getRoleId)
         .toList();

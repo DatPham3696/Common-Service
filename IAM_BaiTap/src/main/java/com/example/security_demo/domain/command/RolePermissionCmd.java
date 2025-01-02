@@ -10,12 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateRoleCmd {
+public class RolePermissionCmd {
 
-  private boolean deleted;
-  private String code;
-  private String description;
-  private String name;
-  private boolean isAdmin;
+  private Long roleId;
   private List<Long> permissionIds;
 }

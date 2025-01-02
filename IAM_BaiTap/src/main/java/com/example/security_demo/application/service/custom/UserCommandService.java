@@ -1,4 +1,4 @@
-package com.example.security_demo.application.service;
+package com.example.security_demo.application.service.custom;
 
 import com.example.security_demo.application.dto.request.user.RegisterRequest;
 import com.example.security_demo.application.dto.request.user.RoleUserRequest;
